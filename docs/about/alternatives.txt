@@ -1,0 +1,40 @@
+#################################
+Alternatives and related projects
+#################################
+
+This document presents other projects that provide similar or complementary
+functionalities. It focuses on differences or relationships with
+`django-docusign`.
+
+
+***************************
+DocuSign's helper libraries
+***************************
+
+There are other libraries related to `DocuSign`_ service. Check
+https://www.docusign.com/developer-center/quick-start/api-explorer/helper-library
+
+
+**********
+pydocusign
+**********
+
+`django-docusign` uses `pydocusign`_, a Python library for `DocuSign`_.
+`django-docusign` focuses on integration in `Django`.
+
+
+**************
+django-anysign
+**************
+
+`django-anysign`_ provides generic tools to integrate online signing in
+`Django`. `django-docusign` implements `django-anysign` API.
+
+
+.. rubric:: References
+
+.. target-notes::
+
+.. _`DocuSign`: https://www.docusign.com/
+.. _`pydocusign`: https://github.com/novapost/pydocusign/
+.. _`django-anysign`: https://github.com/novapost/django-anysign/

@@ -1,0 +1,11 @@
+# Python files.
+*.pyc
+*.pyo
+*.egg-info
+
+# Tox files.
+/.tox/
+
+# Virtualenv files (created by tox).
+/build/
+/dist/

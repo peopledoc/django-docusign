@@ -1,0 +1,13 @@
+#####################
+About django-docusign
+#####################
+
+This section is about the `django-docusign` project itself.
+
+.. toctree::
+
+   vision
+   alternatives
+   license
+   authors
+   changelog

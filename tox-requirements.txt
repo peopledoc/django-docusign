@@ -1,0 +1,2 @@
+-e git+https://github.com/novapost/django-anysign.git#egg=django-anysign
+-e git+https://github.com/novapost/pydocusign.git#egg=pydocysign

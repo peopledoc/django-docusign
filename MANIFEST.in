@@ -1,0 +1,8 @@
+recursive-include django-docusign *
+global-exclude *.pyc
+include AUTHORS
+include CHANGELOG
+include CONTRIBUTING.rst
+include LICENSE
+include README.rst
+include VERSION
