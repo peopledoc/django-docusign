@@ -19,17 +19,17 @@ README = open(os.path.join(here, 'README.rst')).read()
 VERSION = open(os.path.join(here, 'VERSION')).read().strip()
 AUTHOR = u'Benoît Bryon'
 EMAIL = 'benoit@marmelune.net'
-LICENSE = ''
-URL = ''
+LICENSE = 'BSD'
+URL = 'https://django-docusign.readthedocs.org/'
 CLASSIFIERS = [
     'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3.3',
     'Programming Language :: Python :: 3.4',
-    # Add your classifiers here from
-    # https://pypi.python.org/pypi?%3Aaction=list_classifiers
+    'Development Status :: 3 - Alpha',
+    'Framework :: Django',
+    'License :: OSI Approved :: BSD License',
 ]
 KEYWORDS = [
-    'django',
     'docusign',
     'signature',
     'backend',

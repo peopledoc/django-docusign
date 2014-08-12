@@ -26,6 +26,7 @@ Resources
 *********
 
 * Documentation: https://django-docusign.readthedocs.org
+* Python package: https://pypi.python.org/pypi/django-docusign/
 * Bugtracker: https://github.com/novapost/django-docusign/issues
 * Changelog: https://django-docusign.readthedocs.org/en/latest/about/changelog.html
 * Roadmap: https://github.com/novapost/django-docusign/milestones
