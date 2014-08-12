@@ -2,7 +2,7 @@
 Install
 #######
 
-`pydocusign` is open-source software, published under BSD license.
+`django-docusign` is open-source software, published under BSD license.
 See :doc:`/about/license` for details.
 
 If you want to install a development environment, you should go to
@@ -13,7 +13,8 @@ If you want to install a development environment, you should go to
 Prerequisites
 *************
 
-* `Python`_ ==2.7.
+* `Python`_ 2.7, 3.3 or 3.4. Other versions may work, but they are not part of
+  the test suite at the moment.
 
 
 ************
@@ -69,5 +70,5 @@ You should get `django_docusign`'s version.
 
 .. target-notes::
 
-.. _`Python`: http://python.org
+.. _`Python`: https://www.python.org/
 .. _`pip`: https://pypi.python.org/pypi/pip/

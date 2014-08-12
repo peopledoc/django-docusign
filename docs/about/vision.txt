@@ -1,3 +1,13 @@
 ######
 Vision
 ######
+
+`django-docusign` helps you integrate and use `Docusign`_ within a Django
+project.
+
+
+.. rubric:: References
+
+.. target-notes::
+
+.. _`DocuSign`: https://www.docusign.com/

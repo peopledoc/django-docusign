@@ -6,9 +6,10 @@
 PIP = pip
 TOX = tox
 PROJECT = $(shell python -c "import setup; print setup.NAME")
+DEMO = django-docusign-demo
 
 
-.PHONY: help develop clean distclean maintainer-clean test documentation sphinx readme release
+.PHONY: help develop clean distclean maintainer-clean test documentation sphinx readme release demo
 
 
 #: help - Display callable targets.
@@ -22,10 +23,22 @@ help:
 develop:
 	$(PIP) install tox
 	$(PIP) install -e .
+	$(PIP) install -e ./demo/
+
+
+#: demo - Install demo project.
+demo: develop
+	$(DEMO) syncdb --noinput
+	$(DEMO) migrate
+
+
+#: serve - Run development server for demo project.
+serve: demo
+	$(DEMO) runserver
 
 
 #: clean - Basic cleanup, mostly temporary files.
-clean: clean-build clean-pyc
+clean:
 	find . -name '*.pyc' -delete
 	find . -name '*.pyo' -delete
 

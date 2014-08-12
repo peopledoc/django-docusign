@@ -10,11 +10,12 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 Initial release.
 
-- Nothing changed yet.
+- Introduced ``django_docusign.backend.DocuSignBackend`` with "create
+  signature" and "post recipient view" features.
 
 
 .. rubric:: Notes & references
 
 .. target-notes::
 
-.. _`milestones`: https://github.com/novapost/django-docusign/issues/milestones
+.. _`milestones`: https://github.com/novapost/django-docusign/milestones

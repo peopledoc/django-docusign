@@ -36,5 +36,5 @@ django-anysign
 .. target-notes::
 
 .. _`DocuSign`: https://www.docusign.com/
-.. _`pydocusign`: https://github.com/novapost/pydocusign/
-.. _`django-anysign`: https://github.com/novapost/django-anysign/
+.. _`pydocusign`: https://pypi.python.org/pypi/pydocusign/
+.. _`django-anysign`: https://pypi.python.org/pypi/django-anysign/

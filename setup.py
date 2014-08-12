@@ -29,11 +29,16 @@ CLASSIFIERS = [
     # https://pypi.python.org/pypi?%3Aaction=list_classifiers
 ]
 KEYWORDS = [
-    '',
+    'django',
+    'docusign',
+    'signature',
+    'backend',
+    'pydocusign',
+    'django-anysign',
 ]
 PACKAGES = [NAME.replace('-', '_')]
 REQUIREMENTS = [
-	'django-anysign',
+    'django-anysign',
     'pydocusign',
     'setuptools',
 ]
