@@ -1,8 +1,39 @@
-<html>
-  <head>
-    <title>django-docusign demo</title>
-  </head>
-  <body>
-    <h1>Welcome to django-docusign demo!</h1>
-  </body>
-</html>
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block head_title %}{{ block.super }}{% endblock %}
+{% block title %}{% trans "Welcome to django-docusign demo!" %}{% endblock %}
+
+{% block content %}
+  {% if not has_settings %}
+    <a href="{% url 'settings' %}">{% trans "Setup DocuSign settings" %}</a>
+  {% else %}
+    <ul>
+      <li>
+        <a href="{% url 'settings' %}">{% trans "Change DocuSign settings" %}</a>
+      </li>
+      <li>
+        <a href="{% url 'create_signature' %}">{% trans "Create signature" %}</a>
+      </li>
+    </ul>
+  {% endif %}
+  {% if latest_signatures %}
+    <h2>{% trans "Lastest signatures" %}</h2>
+    <div>
+      {% for signature in latest_signatures %}
+        <dl>
+          <dt>{% trans "pk" %}</dt>
+          <dd>{{ signature.pk }}<dd>
+          <dt>{% trans "document" %}</dt>
+          <dd>{{ signature.document.name }}<dd>
+          <dt>{% trans "signer" %}</dt>
+          <dd>{{ signature.signers.all.0.email }} =&gt; <a href="{{ signature.signers.all.0.get_absolute_url }}">{% trans "sign" %}</a><dd>
+          <dt>{% trans "backend" %}</dt>
+          <dd>{{ signature.signature_backend.code }}<dd>
+          <dt>{% trans "backend ID" %}</dt>
+          <dd>{{ signature.signature_backend_id }}<dd>
+        </dl>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}

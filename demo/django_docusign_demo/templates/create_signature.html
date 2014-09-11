@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Create signature" %}{% endblock %}
+{% block title %}{% trans "Create signature" %}{% endblock %}
+
+{% block content %}
+  <p>{% trans "Create a DocuSign envelope." %}</p>
+  <form method="POST" enctype="multipart/form-data" action=".">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create signature enveloppe</button>
+  </form>
+{% endblock %}
