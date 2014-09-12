@@ -20,12 +20,22 @@ class DocuSignBackend(django_anysign.SignatureBackend):
         #: Instance of :class:`~pydocusign.client.DocuSignClient`
         self.docusign_client = pydocusign.DocuSignClient(**kwargs)
 
-    def create_signature(self, signature):
+    def create_signature(self, signature, tabs=None):
         """Register ``signature`` in DocuSign service, return updated object.
 
         This method calls ``save()`` on ``signature``.
-
         """
+        tabs = tabs or []
+        pydocusign_tabs = {}
+        for tab in tabs:
+            tab_class = None
+            if tab['type'] in ['SignHereTab', 'ApproveTab']:
+                tab_class = getattr(pydocusign, tab['type'])
+
+            if tab_class is not None:
+                pydocusign_tabs.setdefault(tab['signer'], [])
+                pydocusign_tabs[tab['signer']].append(tab_class(**tab['attributes']))
+
         # Prepare signers.
         signers = [
             pydocusign.Signer(
@@ -33,14 +43,7 @@ class DocuSignBackend(django_anysign.SignatureBackend):
                 name=signer.full_name,
                 recipientId=signer.pk,
                 clientUserId=signer.pk,
-                tabs=[
-                    pydocusign.SignHereTab(
-                        documentId=1,
-                        pageNumber=1,
-                        xPosition=100,
-                        yPosition=100,
-                    ),
-                ],
+                tabs=pydocusign_tabs.get(signer.pk),
             ) for signer in signature.signers.all()
         ]
         # Prepare documents.
@@ -80,14 +83,6 @@ class DocuSignBackend(django_anysign.SignatureBackend):
                 name=every_signer.full_name,
                 recipientId=every_signer.pk,
                 clientUserId=every_signer.pk,
-                tabs=[
-                    pydocusign.SignHereTab(
-                        documentId=1,
-                        pageNumber=1,
-                        xPosition=100,
-                        yPosition=100,
-                    ),
-                ],
             ) for every_signer in signer.signature.signers.all()
         ]
         # Create envelope with embedded signing.
