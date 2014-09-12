@@ -38,6 +38,7 @@ KEYWORDS = [
 ]
 PACKAGES = [NAME.replace('-', '_')]
 REQUIREMENTS = [
+    'Django<1.7',
     'django-anysign',
     'pydocusign',
     'setuptools',
