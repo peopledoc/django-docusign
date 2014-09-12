@@ -1,0 +1,11 @@
+{% load i18n %}
+<html>
+  <head>
+  <title>{% block head_title %}{% trans "django-docusign demo" %}{% endblock %}</title>
+  </head>
+  <body>
+    <p>{% block breadcrumb %}&gt; <a href="{% url 'home' %}">{% trans "django-docusign's demo" %}</a>{% endblock %}</p>
+    <h1>{% block title %}{% endblock %}</h1>
+    {% block content %}{% endblock %}
+  </body>
+</html>

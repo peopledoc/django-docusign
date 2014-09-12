@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Configure django-docusign demo" %}{% endblock %}
+{% block title %}{% trans "Configure django-docusign demo" %}{% endblock %}
+
+{% block content %}
+  <p>{% trans "The following settings will be stored in the session." %}</p>
+  <form method="POST" action=".">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save settings</button>
+  </form>
+{% endblock %}

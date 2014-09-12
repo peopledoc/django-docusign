@@ -2,8 +2,6 @@ language: python
 env:
   matrix:
   - TOXENV=py27
-  - TOXENV=py33
-  - TOXENV=py34
   - TOXENV=flake8
   - TOXENV=readme
   global:

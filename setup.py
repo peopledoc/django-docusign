@@ -23,8 +23,6 @@ LICENSE = 'BSD'
 URL = 'https://django-docusign.readthedocs.org/'
 CLASSIFIERS = [
     'Programming Language :: Python :: 2.7',
-    'Programming Language :: Python :: 3.3',
-    'Programming Language :: Python :: 3.4',
     'Development Status :: 3 - Alpha',
     'Framework :: Django',
     'License :: OSI Approved :: BSD License',
@@ -38,6 +36,7 @@ KEYWORDS = [
 ]
 PACKAGES = [NAME.replace('-', '_')]
 REQUIREMENTS = [
+    'Django<1.7',
     'django-anysign',
     'pydocusign',
     'setuptools',

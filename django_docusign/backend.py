@@ -3,7 +3,8 @@ import pydocusign
 
 
 class DocuSignBackend(django_anysign.SignatureBackend):
-    def __init__(self, name, code, url_namespace='anysign', **kwargs):
+    def __init__(self, name='DocuSign', code='docusign',
+                 url_namespace='anysign', **kwargs):
         """Setup.
 
         Additional keyword arguments are passed to
@@ -12,8 +13,8 @@ class DocuSignBackend(django_anysign.SignatureBackend):
 
         """
         super(DocuSignBackend, self).__init__(
-            name='DocuSign',
-            code='docusign',
+            name=name,
+            code=code,
             url_namespace=url_namespace,
         )
         #: Instance of :class:`~pydocusign.client.DocuSignClient`
@@ -70,7 +71,8 @@ class DocuSignBackend(django_anysign.SignatureBackend):
         # Return updated object.
         return signature
 
-    def post_recipient_view(self, signer):
+    def post_recipient_view(self, signer, position=None,
+                            signer_return_url=None):
         # Prepare signers.
         signers = [
             pydocusign.Signer(
@@ -93,9 +95,13 @@ class DocuSignBackend(django_anysign.SignatureBackend):
             envelopeId=signer.signature.signature_backend_id,
             recipients=signers,
         )
+        if position is None:
+            position = list(signer.signature.signers.all()).index(signer)
+        if signer_return_url is None:
+            self.get_signer_return_url(signer)
         envelope.get_recipients(client=self.docusign_client)
         return envelope.post_recipient_view(
             client=self.docusign_client,
-            routingOrder=signer.signing_order,
-            returnUrl=self.get_signer_return_url(signer)
+            routingOrder=position,
+            returnUrl=signer_return_url
         )
