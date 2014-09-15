@@ -20,32 +20,42 @@ class DocuSignBackend(django_anysign.SignatureBackend):
         #: Instance of :class:`~pydocusign.client.DocuSignClient`
         self.docusign_client = pydocusign.DocuSignClient(**kwargs)
 
-    def create_signature(self, signature, tabs=None):
-        """Register ``signature`` in DocuSign service, return updated object.
+    def get_docusign_tabs(self, signer):
+        """Return list of pydocusign's tabs for Signer instance.
 
-        This method calls ``save()`` on ``signature``.
+        Default implementation returns no tab, i.e. the signer chooses where to
+        sign!
+
         """
-        tabs = tabs or []
-        pydocusign_tabs = {}
-        for tab in tabs:
-            tab_class = None
-            if tab['type'] in ['SignHereTab', 'ApproveTab']:
-                tab_class = getattr(pydocusign, tab['type'])
+        return []
 
-            if tab_class is not None:
-                pydocusign_tabs.setdefault(tab['signer'], [])
-                pydocusign_tabs[tab['signer']].append(tab_class(**tab['attributes']))
+    def get_docusign_signers(self, signature):
+        """Return list of pydocusign's Signer for Signature instance.
 
-        # Prepare signers.
-        signers = [
-            pydocusign.Signer(
+        Default implementation reads name and email from database.
+
+        """
+        signers = []
+        for signer in signature.signers.all():
+            tabs = self.get_docusign_tabs(signer)
+            signer = pydocusign.Signer(
                 email=signer.email,
                 name=signer.full_name,
                 recipientId=signer.pk,
                 clientUserId=signer.pk,
-                tabs=pydocusign_tabs.get(signer.pk),
-            ) for signer in signature.signers.all()
-        ]
+                tabs=tabs,
+            )
+            signers.append(signer)
+        return signers
+
+    def create_signature(self, signature):
+        """Register ``signature`` in DocuSign service, return updated object.
+
+        This method calls ``save()`` on ``signature``.
+
+        """
+        # Prepare signers.
+        signers = self.get_docusign_signers(signature)
         # Prepare documents.
         documents = []
         i = 1
