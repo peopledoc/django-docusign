@@ -12,6 +12,8 @@ Introduced demo application (with tests).
 
 - Feature #4 - Introduced demo application: illustrate and test API usage.
 
+- Feature #3 - On signature creation, tabs can be computed by backend.
+
 
 0.1 (2014-08-12)
 ----------------

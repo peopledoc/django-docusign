@@ -20,6 +20,34 @@ class DocuSignBackend(django_anysign.SignatureBackend):
         #: Instance of :class:`~pydocusign.client.DocuSignClient`
         self.docusign_client = pydocusign.DocuSignClient(**kwargs)
 
+    def get_docusign_tabs(self, signer):
+        """Return list of pydocusign's tabs for Signer instance.
+
+        Default implementation returns no tab, i.e. the signer chooses where to
+        sign!
+
+        """
+        return []
+
+    def get_docusign_signers(self, signature):
+        """Return list of pydocusign's Signer for Signature instance.
+
+        Default implementation reads name and email from database.
+
+        """
+        signers = []
+        for signer in signature.signers.all():
+            tabs = self.get_docusign_tabs(signer)
+            signer = pydocusign.Signer(
+                email=signer.email,
+                name=signer.full_name,
+                recipientId=signer.pk,
+                clientUserId=signer.pk,
+                tabs=tabs,
+            )
+            signers.append(signer)
+        return signers
+
     def create_signature(self, signature):
         """Register ``signature`` in DocuSign service, return updated object.
 
@@ -27,22 +55,7 @@ class DocuSignBackend(django_anysign.SignatureBackend):
 
         """
         # Prepare signers.
-        signers = [
-            pydocusign.Signer(
-                email=signer.email,
-                name=signer.full_name,
-                recipientId=signer.pk,
-                clientUserId=signer.pk,
-                tabs=[
-                    pydocusign.SignHereTab(
-                        documentId=1,
-                        pageNumber=1,
-                        xPosition=100,
-                        yPosition=100,
-                    ),
-                ],
-            ) for signer in signature.signers.all()
-        ]
+        signers = self.get_docusign_signers(signature)
         # Prepare documents.
         documents = []
         i = 1
@@ -80,14 +93,6 @@ class DocuSignBackend(django_anysign.SignatureBackend):
                 name=every_signer.full_name,
                 recipientId=every_signer.pk,
                 clientUserId=every_signer.pk,
-                tabs=[
-                    pydocusign.SignHereTab(
-                        documentId=1,
-                        pageNumber=1,
-                        xPosition=100,
-                        yPosition=100,
-                    ),
-                ],
             ) for every_signer in signer.signature.signers.all()
         ]
         # Create envelope with embedded signing.

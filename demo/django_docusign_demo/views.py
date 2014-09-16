@@ -74,24 +74,41 @@ class CreateSignatureView(FormView):
     def form_valid(self, form):
         """Create envelope on DocuSign's side."""
         # Prepare signature instance with uploaded document, Django side.
-        backend_settings = docusign_settings(self.request)
-        signature_backend = django_anysign.get_signature_backend(
-            'docusign',
-            **backend_settings
-        )
         (signature_type, created) = models.SignatureType.objects.get_or_create(
             signature_backend_code='docusign')
         signature = models.Signature.objects.create(
             signature_type=signature_type,
             document=self.request.FILES['document'],
         )
+        # Add signers (only one in this implementation).
         signature.signers.create(
             full_name=form.cleaned_data['signer_name'],
-            email=form.cleaned_data['signer_email']
+            email=form.cleaned_data['signer_email'],
         )
         # Create signature, backend side.
-        signature_backend.create_signature(signature)
+        self.create_signature(signature)
         return super(CreateSignatureView, self).form_valid(form)
+
+    @property
+    def signature_backend(self):
+        try:
+            return self._signature_backend
+        except AttributeError:
+            self._signature_backend = self.get_signature_backend()
+            return self._signature_backend
+
+    def get_signature_backend(self):
+        """Return signature backend instance."""
+        backend_settings = docusign_settings(self.request)
+        signature_backend = django_anysign.get_signature_backend(
+            'docusign',
+            **backend_settings
+        )
+        return signature_backend
+
+    def create_signature(self, signature):
+        """Create signature backend-side."""
+        self.signature_backend.create_signature(signature)
 
 
 class SignerView(SingleObjectMixin, RedirectView):
