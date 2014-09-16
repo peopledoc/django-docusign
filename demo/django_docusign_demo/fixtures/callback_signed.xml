@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<DocuSignEnvelopeInformation xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                             xmlns="http://www.docusign.net/API/3.0">
+  <EnvelopeStatus>
+    <RecipientStatuses>
+      <RecipientStatus>
+        <Type>Signer</Type>
+        <Email>benoit@marmelune.net</Email>
+        <UserName>Benoît Bryon</UserName>
+        <RoutingOrder>1</RoutingOrder>
+        <Sent>2014-09-16T03:07:49.277</Sent>
+        <Delivered>2014-09-16T03:25:52.403</Delivered>
+        <Signed>2014-09-16T03:28:35.847</Signed>
+        <DeclineReason xsi:nil="true" />
+        <Status>Completed</Status>
+        <RecipientIPAddress>88.171.174.79</RecipientIPAddress>
+        <ClientUserId>6</ClientUserId>
+        <CustomFields />
+        <TabStatuses>
+          <TabStatus>
+            <TabType>DateSigned</TabType>
+            <Status>Signed</Status>
+            <XPosition>260</XPosition>
+            <YPosition>490</YPosition>
+            <TabValue>9/16/2014</TabValue>
+            <DocumentID>1</DocumentID>
+            <PageNumber>1</PageNumber>
+          </TabStatus>
+          <TabStatus>
+            <TabType>SignHere</TabType>
+            <Status>Signed</Status>
+            <XPosition>228</XPosition>
+            <YPosition>528</YPosition>
+            <DocumentID>1</DocumentID>
+            <PageNumber>1</PageNumber>
+          </TabStatus>
+          <TabStatus>
+            <TabType>Custom</TabType>
+            <Status>Signed</Status>
+            <XPosition>255</XPosition>
+            <YPosition>612</YPosition>
+            <TabLabel>FullName</TabLabel>
+            <TabName>Text</TabName>
+            <TabValue>Benoît Bryon</TabValue>
+            <DocumentID>1</DocumentID>
+            <PageNumber>1</PageNumber>
+            <CustomTabType>Text</CustomTabType>
+          </TabStatus>
+        </TabStatuses>
+        <RecipientAttachment>
+          <Attachment>
+            <Data>PEZvcm1EYXRhPjx4ZmRmPjxmaWVsZHM+PGZpZWxkIG5hbWU9IkRhdGVTaWduZWQiPjx2YWx1ZT45LzE2LzIwMTQgPC92YWx1ZT48L2ZpZWxkPjxmaWVsZCBuYW1lPSJGdWxsTmFtZSI+PHZhbHVlPkJlbm/DrnQgQnJ5b248L3ZhbHVlPjwvZmllbGQ+PC9maWVsZHM+PC94ZmRmPjwvRm9ybURhdGE+</Data>
+            <Label>DSXForm</Label>
+          </Attachment>
+        </RecipientAttachment>
+        <AccountStatus>Active</AccountStatus>
+        <EsignAgreementInformation>
+          <AccountEsignId>f32da517-df75-4497-9b9d-6a6270329b16</AccountEsignId>
+          <UserEsignId>08f431f3-c3c2-4606-a1af-ae59bdb7d764</UserEsignId>
+          <AgreementDate>2014-09-16T03:25:52.387</AgreementDate>
+        </EsignAgreementInformation>
+        <FormData>
+          <xfdf>
+            <fields>
+              <field name="DateSigned">
+                <value>9/16/2014 </value>
+              </field>
+              <field name="FullName">
+                <value>Benoît Bryon</value>
+              </field>
+            </fields>
+          </xfdf>
+        </FormData>
+        <RecipientId>10ca30ab-6ab0-4a20-9e4f-3ac5975ba7cd</RecipientId>
+      </RecipientStatus>
+    </RecipientStatuses>
+    <TimeGenerated>2014-09-16T03:28:58.121756</TimeGenerated>
+    <EnvelopeID>62d077fc-e912-4854-acac-da30a7c9854b</EnvelopeID>
+    <Subject>This is the subject</Subject>
+    <UserName>Benoît Bryon</UserName>
+    <Email>benoit.bryon@novapost.fr</Email>
+    <Status>Completed</Status>
+    <Created>2014-09-16T03:07:49.06</Created>
+    <Sent>2014-09-16T03:07:49.323</Sent>
+    <Delivered>2014-09-16T03:25:52.467</Delivered>
+    <Signed>2014-09-16T03:28:35.863</Signed>
+    <Completed>2014-09-16T03:28:35.863</Completed>
+    <ACStatus>Original</ACStatus>
+    <ACStatusDate>2014-09-16T03:07:49.06</ACStatusDate>
+    <ACHolder>Benoît Bryon</ACHolder>
+    <ACHolderEmail>benoit.bryon@novapost.fr</ACHolderEmail>
+    <ACHolderLocation>DocuSign</ACHolderLocation>
+    <SigningLocation>Online</SigningLocation>
+    <SenderIPAddress>88.171.174.79</SenderIPAddress>
+    <EnvelopePDFHash />
+    <CustomFields>
+      <CustomField>
+        <Name>AccountId</Name>
+        <Show>false</Show>
+        <Required>false</Required>
+        <Value>492035</Value>
+        <CustomFieldType>Text</CustomFieldType>
+      </CustomField>
+      <CustomField>
+        <Name>AccountName</Name>
+        <Show>false</Show>
+        <Required>false</Required>
+        <Value>Novapost</Value>
+        <CustomFieldType>Text</CustomFieldType>
+      </CustomField>
+      <CustomField>
+        <Name>AccountSite</Name>
+        <Show>false</Show>
+        <Required>false</Required>
+        <Value>demo</Value>
+        <CustomFieldType>Text</CustomFieldType>
+      </CustomField>
+    </CustomFields>
+    <AutoNavigation>true</AutoNavigation>
+    <EnvelopeIdStamping>true</EnvelopeIdStamping>
+    <AuthoritativeCopy>false</AuthoritativeCopy>
+    <DocumentStatuses>
+      <DocumentStatus>
+        <ID>1</ID>
+        <Name>signatures/test_32.pdf</Name>
+        <TemplateName />
+        <Sequence>1</Sequence>
+      </DocumentStatus>
+    </DocumentStatuses>
+  </EnvelopeStatus>
+  <TimeZone>Pacific Standard Time</TimeZone>
+  <TimeZoneOffset>-7</TimeZoneOffset>
+</DocuSignEnvelopeInformation>

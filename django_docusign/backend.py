@@ -48,7 +48,7 @@ class DocuSignBackend(django_anysign.SignatureBackend):
             signers.append(signer)
         return signers
 
-    def create_signature(self, signature):
+    def create_signature(self, signature, callback_url=None):
         """Register ``signature`` in DocuSign service, return updated object.
 
         This method calls ``save()`` on ``signature``.
@@ -68,10 +68,17 @@ class DocuSignBackend(django_anysign.SignatureBackend):
                 )
             )
             i += 1
+        # Prepare event notifications (callbacks).
+        if callback_url is None:
+            callback_url = self.get_signature_callback_url(signature),
+        event_notification = pydocusign.EventNotification(
+            url=callback_url,
+        )
         # Create envelope with embedded signing.
         envelope = pydocusign.Envelope(
             emailSubject='This is the subject',
             emailBlurb='This is the body',
+            eventNotification=event_notification,
             status=pydocusign.Envelope.STATUS_SENT,
             documents=documents,
             recipients=signers,

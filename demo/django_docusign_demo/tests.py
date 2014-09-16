@@ -27,6 +27,7 @@ class SignatureFunctionalTestCase(django.test.TestCase):
                     'signer_name': u'John Accentué',
                     'signer_email': u'john@example.com',
                     'document': document_file,
+                    'callback_url': u'http://tech.novapost.fr',
                 }
                 response = self.client.post(url, data)
             self.assertEqual(response.status_code, 302)
@@ -47,3 +48,51 @@ class SignatureFunctionalTestCase(django.test.TestCase):
         self.assertEqual(response.status_code, 301)
         self.assertTrue(
             response['Location'].startswith('https://demo.docusign.net'))
+
+    def test_signature_sent_callback(self):
+        """Callback view handles DocuSign's 'sent' status."""
+        url = reverse('anysign:signature_callback')
+        request_body = open(
+            os.path.join(fixtures_dir, 'callback_sent.xml')).read()
+        response = self.client.post(
+            url,
+            content_type='text/xml',
+            data=request_body,
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_signature_delivered_callback(self):
+        """Callback view handles DocuSign's 'delivered' status."""
+        url = reverse('anysign:signature_callback')
+        request_body = open(
+            os.path.join(fixtures_dir, 'callback_delivered.xml')).read()
+        response = self.client.post(
+            url,
+            content_type='text/xml',
+            data=request_body,
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_signature_signed_callback(self):
+        """Callback view handles DocuSign's 'signed' status."""
+        url = reverse('anysign:signature_callback')
+        request_body = open(
+            os.path.join(fixtures_dir, 'callback_signed.xml')).read()
+        response = self.client.post(
+            url,
+            content_type='text/xml',
+            data=request_body,
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_signature_declined_callback(self):
+        """Callback view handles DocuSign's 'declined' status."""
+        url = reverse('anysign:signature_callback')
+        request_body = open(
+            os.path.join(fixtures_dir, 'callback_declined.xml')).read()
+        response = self.client.post(
+            url,
+            content_type='text/xml',
+            data=request_body,
+        )
+        self.assertEqual(response.status_code, 200)

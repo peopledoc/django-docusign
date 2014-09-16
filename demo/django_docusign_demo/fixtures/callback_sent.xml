@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sample body of the request posted by DocuSign as event notification when signature is "sent". -->
+<DocuSignEnvelopeInformation xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                             xmlns="http://www.docusign.net/API/3.0">
+  <EnvelopeStatus>
+    <RecipientStatuses>
+      <RecipientStatus>
+        <Type>Signer</Type>
+        <Email>benoit@marmelune.net</Email>
+        <UserName>Benoît Bryon</UserName>
+        <RoutingOrder>1</RoutingOrder>
+        <Sent>2014-09-16T03:07:49.277</Sent>
+        <DeclineReason xsi:nil="true" />
+        <Status>Sent</Status>
+        <RecipientIPAddress />
+        <ClientUserId>6</ClientUserId>
+        <CustomFields />
+        <AccountStatus>Active</AccountStatus>
+        <RecipientId>10ca30ab-6ab0-4a20-9e4f-3ac5975ba7cd</RecipientId>
+      </RecipientStatus>
+    </RecipientStatuses>
+    <TimeGenerated>2014-09-16T03:08:09.210928</TimeGenerated>
+    <EnvelopeID>62d077fc-e912-4854-acac-da30a7c9854b</EnvelopeID>
+    <Subject>This is the subject</Subject>
+    <UserName>Benoît Bryon</UserName>
+    <Email>benoit.bryon@novapost.fr</Email>
+    <Status>Sent</Status>
+    <Created>2014-09-16T03:07:49.06</Created>
+    <Sent>2014-09-16T03:07:49.323</Sent>
+    <ACStatus>Original</ACStatus>
+    <ACStatusDate>2014-09-16T03:07:49.06</ACStatusDate>
+    <ACHolder>Benoît Bryon</ACHolder>
+    <ACHolderEmail>benoit.bryon@novapost.fr</ACHolderEmail>
+    <ACHolderLocation>DocuSign</ACHolderLocation>
+    <SigningLocation>Online</SigningLocation>
+    <SenderIPAddress>88.171.174.79</SenderIPAddress>
+    <EnvelopePDFHash />
+    <CustomFields>
+      <CustomField>
+        <Name>AccountId</Name>
+        <Show>false</Show>
+        <Required>false</Required>
+        <Value>492035</Value>
+        <CustomFieldType>Text</CustomFieldType>
+      </CustomField>
+      <CustomField>
+        <Name>AccountName</Name>
+        <Show>false</Show>
+        <Required>false</Required>
+        <Value>Novapost</Value>
+        <CustomFieldType>Text</CustomFieldType>
+      </CustomField>
+      <CustomField>
+        <Name>AccountSite</Name>
+        <Show>false</Show>
+        <Required>false</Required>
+        <Value>demo</Value>
+        <CustomFieldType>Text</CustomFieldType>
+      </CustomField>
+    </CustomFields>
+    <AutoNavigation>true</AutoNavigation>
+    <EnvelopeIdStamping>true</EnvelopeIdStamping>
+    <AuthoritativeCopy>false</AuthoritativeCopy>
+    <DocumentStatuses>
+      <DocumentStatus>
+        <ID>1</ID>
+        <Name>signatures/test_32.pdf</Name>
+        <TemplateName />
+        <Sequence>1</Sequence>
+      </DocumentStatus>
+    </DocumentStatuses>
+  </EnvelopeStatus>
+  <TimeZone>Pacific Standard Time</TimeZone>
+  <TimeZoneOffset>-7</TimeZoneOffset>
+</DocuSignEnvelopeInformation>

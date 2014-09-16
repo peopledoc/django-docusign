@@ -38,6 +38,7 @@ PACKAGES = [NAME.replace('-', '_')]
 REQUIREMENTS = [
     'Django<1.7',
     'django-anysign',
+    'lxml',
     'pydocusign',
     'setuptools',
 ]

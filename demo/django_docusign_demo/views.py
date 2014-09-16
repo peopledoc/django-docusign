@@ -5,6 +5,7 @@ import django_anysign
 
 from django.core.urlresolvers import reverse
 from django.views.generic import FormView, TemplateView, RedirectView
+from django.views.generic.base import TemplateResponseMixin, ContextMixin, View
 from django.views.generic.detail import SingleObjectMixin
 
 from django_docusign_demo import forms
@@ -73,6 +74,7 @@ class CreateSignatureView(FormView):
 
     def form_valid(self, form):
         """Create envelope on DocuSign's side."""
+        self.cleaned_data = form.cleaned_data
         # Prepare signature instance with uploaded document, Django side.
         (signature_type, created) = models.SignatureType.objects.get_or_create(
             signature_backend_code='docusign')
@@ -108,7 +110,9 @@ class CreateSignatureView(FormView):
 
     def create_signature(self, signature):
         """Create signature backend-side."""
-        self.signature_backend.create_signature(signature)
+        self.signature_backend.create_signature(
+            signature,
+            callback_url=self.cleaned_data['callback_url'])
 
 
 class SignerView(SingleObjectMixin, RedirectView):
@@ -133,3 +137,13 @@ class SignerView(SingleObjectMixin, RedirectView):
 class SignerReturnView(TemplateView):
     """Welcome the signer back from DocuSign."""
     template_name = 'signer_return.html'
+
+
+class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
+    """Handle DocuSign's event notification."""
+    template_name = 'signature_callback'
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        import pdb;pdb.set_trace()
+        return self.render_to_response(context)
