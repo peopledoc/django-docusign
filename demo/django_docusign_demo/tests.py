@@ -49,50 +49,58 @@ class SignatureFunctionalTestCase(django.test.TestCase):
         self.assertTrue(
             response['Location'].startswith('https://demo.docusign.net'))
 
-    def test_signature_sent_callback(self):
-        """Callback view handles DocuSign's 'sent' status."""
+    def _test_signature_callback(self, status, envelope_id, signer_id):
+        signer = self.signature.signers.get()
+        self.assertEqual(signer.status, 'draft')
         url = reverse('anysign:signature_callback')
         request_body = open(
-            os.path.join(fixtures_dir, 'callback_sent.xml')).read()
+            os.path.join(fixtures_dir,
+                         'callback_{status}.xml'.format(status=status))).read()
+        request_body = request_body.replace(
+            '<EnvelopeID>{uuid}</EnvelopeID>'.format(uuid=envelope_id),
+            '<EnvelopeID>{uuid}</EnvelopeID>'.format(
+                uuid=self.signature.signature_backend_id))
+        request_body = request_body.replace(
+            '<ClientUserId>{id}</ClientUserId>'.format(id=signer_id),
+            '<ClientUserId>{id}</ClientUserId>'.format(
+                id=signer.pk))
         response = self.client.post(
             url,
             content_type='text/xml',
             data=request_body,
         )
         self.assertEqual(response.status_code, 200)
+        signer = self.signature.signers.get()
+        self.assertEqual(signer.status, status)
+
+    def test_signature_sent_callback(self):
+        """Callback view handles DocuSign's 'sent' status."""
+        self._test_signature_callback(
+            'sent',
+            '62d077fc-e912-4854-acac-da30a7c9854b',
+            '6',
+        )
 
     def test_signature_delivered_callback(self):
         """Callback view handles DocuSign's 'delivered' status."""
-        url = reverse('anysign:signature_callback')
-        request_body = open(
-            os.path.join(fixtures_dir, 'callback_delivered.xml')).read()
-        response = self.client.post(
-            url,
-            content_type='text/xml',
-            data=request_body,
+        self._test_signature_callback(
+            'delivered',
+            '62d077fc-e912-4854-acac-da30a7c9854b',
+            '6',
         )
-        self.assertEqual(response.status_code, 200)
 
-    def test_signature_signed_callback(self):
-        """Callback view handles DocuSign's 'signed' status."""
-        url = reverse('anysign:signature_callback')
-        request_body = open(
-            os.path.join(fixtures_dir, 'callback_signed.xml')).read()
-        response = self.client.post(
-            url,
-            content_type='text/xml',
-            data=request_body,
+    def test_signature_completed_callback(self):
+        """Callback view handles DocuSign's 'completed' status."""
+        self._test_signature_callback(
+            'completed',
+            '62d077fc-e912-4854-acac-da30a7c9854b',
+            '6',
         )
-        self.assertEqual(response.status_code, 200)
 
     def test_signature_declined_callback(self):
         """Callback view handles DocuSign's 'declined' status."""
-        url = reverse('anysign:signature_callback')
-        request_body = open(
-            os.path.join(fixtures_dir, 'callback_declined.xml')).read()
-        response = self.client.post(
-            url,
-            content_type='text/xml',
-            data=request_body,
+        self._test_signature_callback(
+            'declined',
+            'e9708096-6e41-48e6-b24f-334aadaa93af',
+            '9',
         )
-        self.assertEqual(response.status_code, 200)

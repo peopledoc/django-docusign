@@ -36,6 +36,7 @@ KEYWORDS = [
 ]
 PACKAGES = [NAME.replace('-', '_')]
 REQUIREMENTS = [
+    'beautifulsoup4',
     'Django<1.7',
     'django-anysign',
     'lxml',
