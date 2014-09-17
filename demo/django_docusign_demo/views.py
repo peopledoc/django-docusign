@@ -1,6 +1,7 @@
 """Demo views for `django-docusign`."""
 import os
 
+from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.views.generic import FormView, TemplateView, RedirectView
 from django.views.generic.base import TemplateResponseMixin, ContextMixin, View
@@ -196,24 +197,53 @@ class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
             self._signer = self.signature.signers.get(pk=signer_id)
             return self._signer
 
-    def signature_sent(self):
-        self.signer.status = 'sent'
+    @property
+    def signature_backend(self):
+        try:
+            return self._signature_backend
+        except AttributeError:
+            self._signature_backend = self.get_signature_backend()
+            return self._signature_backend
+
+    def get_signature_backend(self):
+        """Return signature backend instance."""
+        backend_settings = docusign_settings(self.request)
+        signature_backend = django_anysign.get_signature_backend(
+            'docusign',
+            **backend_settings
+        )
+        return signature_backend
+
+    def update_signer_status(self, status):
+        self.signer.status = status
         self.signer.status_datetime = now()
         self.signer.save()
+
+    def signature_sent(self):
+        self.update_signer_status(status='sent')
 
     def signature_delivered(self):
-        self.signer.status = 'delivered'
-        self.signer.status_datetime = now()
-        self.signer.save()
+        self.update_signer_status(status='delivered')
 
     def signature_completed(self):
-        self.signer.status = 'completed'
-        self.signer.status_datetime = now()
-        self.signer.save()
+        envelope_id = self.signature.signature_backend_id
+        document_list = self.signature_backend \
+                            .docusign_client \
+                            .get_envelope_document_list(envelope_id)
+        document_id = document_list[0]['documentId']
+        document = self.signature_backend \
+                       .docusign_client \
+                       .get_envelope_document(envelope_id, document_id)
+        filename = self.signature.document.name
+        self.signature.document.delete(save=False)
+        self.signature.document.save(filename,
+                                     ContentFile(document.read()),
+                                     save=True)
+        document.close()
+        self.update_signer_status(status='completed')
 
     def signature_declined(self):
-        self.signer.status = 'declined'
-        self.signer.status_datetime = now()
+        self.update_signer_status(status='declined')
         self.signer.status_details = self.docusign_data \
                                          .EnvelopeStatus \
                                          .RecipientStatuses \

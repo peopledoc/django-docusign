@@ -40,7 +40,7 @@ REQUIREMENTS = [
     'Django<1.7',
     'django-anysign',
     'lxml',
-    'pydocusign',
+    'pydocusign>=0.4',
     'setuptools',
 ]
 ENTRY_POINTS = {}
