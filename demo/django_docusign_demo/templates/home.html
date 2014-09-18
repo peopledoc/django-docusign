@@ -27,7 +27,9 @@
           <dt>{% trans "document" %}</dt>
           <dd>{{ signature.document.name }}<dd>
           <dt>{% trans "signer" %}</dt>
-          <dd>{{ signature.signers.all.0.email }} =&gt; <a href="{{ signature.signers.all.0.get_absolute_url }}">{% trans "sign" %}</a><dd>
+          {% with signature.signers.all.0 as signer %}
+            <dd>{{ signer.email }} =&gt; <a href="{{ signature.signers.all.0.get_absolute_url }}">{% trans "sign" %}</a> [{{ signer.status }}]<dd>
+          {% endwith %}
           <dt>{% trans "backend" %}</dt>
           <dd>{{ signature.signature_backend.code }}<dd>
           <dt>{% trans "backend ID" %}</dt>
