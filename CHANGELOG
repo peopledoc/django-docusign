@@ -5,7 +5,7 @@ This document describes changes between each past release. For information
 about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 
-0.3 (unreleased)
+0.3 (2014-09-18)
 ----------------
 
 Updated demo to manage DocuSign API callbacks.
