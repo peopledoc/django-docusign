@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, url, include
+from django.views.decorators.csrf import csrf_exempt
 
 from django_docusign_demo import views
 
@@ -8,7 +9,7 @@ settings_view = views.SettingsView.as_view()
 create_signature_view = views.CreateSignatureView.as_view()
 signer_view = views.SignerView.as_view()
 signer_return_view = views.SignerReturnView.as_view()
-signature_callback_view = views.SignatureCallbackView.as_view()
+signature_callback_view = csrf_exempt(views.SignatureCallbackView.as_view())
 
 
 urlpatterns = patterns(
