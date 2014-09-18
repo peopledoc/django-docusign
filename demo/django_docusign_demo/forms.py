@@ -41,3 +41,6 @@ class CreateSignatureForm(forms.Form):
     signer_email = forms.EmailField(
         label=_("Signer's email"),
     )
+    callback_url = forms.URLField(
+        label=_('API callback URL'),
+    )

@@ -8,7 +8,13 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.3 (unreleased)
 ----------------
 
-- Nothing changed yet.
+Updated demo to manage DocuSign API callbacks.
+
+- Feature #1 - Introduced support for DocuSign API callbacks (envelope
+  updates). At the moment, the feature is mostly made of sample code in the
+  demo project. It shows how `django-docusign` can be used to handle DocuSign's
+  API callbacks. The idea is to let users try the feature then, later, add most
+  useful parts in ``django_docusign`` package.
 
 
 0.2 (2014-09-16)

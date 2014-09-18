@@ -37,3 +37,26 @@ class Signer(django_anysign.SignerFactory(Signature)):
         _('email'),
         db_index=True,
     )
+    status = models.CharField(
+        _('status'),
+        max_length=50,
+        db_index=True,
+        choices=(
+            ('draft', _('draft')),
+            ('sent', _('sent')),
+            ('delivered', _('delivered')),
+            ('completed', _('completed')),
+            ('declined', _('declined')),
+            ('cancelled', _('cancelled')),
+        ),
+        default='draft',
+    )
+    status_datetime = models.DateTimeField(
+        _('status datetime'),
+        auto_now_add=True,
+    )
+    status_details = models.CharField(
+        _('status details'),
+        max_length=250,
+        blank=True,
+    )
