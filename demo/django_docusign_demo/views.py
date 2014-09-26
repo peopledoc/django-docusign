@@ -4,12 +4,11 @@ import os
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.views.generic import FormView, TemplateView, RedirectView
-from django.views.generic.base import TemplateResponseMixin, ContextMixin, View
 from django.views.generic.detail import SingleObjectMixin
 from django.utils.timezone import now
 
-from bs4 import BeautifulSoup
 import django_anysign
+import django_docusign
 
 from django_docusign_demo import forms
 from django_docusign_demo import models
@@ -142,69 +141,7 @@ class SignerReturnView(TemplateView):
     template_name = 'signer_return.html'
 
 
-class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
-    """Handle DocuSign's event notification."""
-    template_name = 'signature_callback.html'
-
-    def post(self, request, *args, **kwargs):
-        self.update_signature()
-        context = self.get_context_data(**kwargs)
-        return self.render_to_response(context)
-
-    def get_context_data(self, **kwargs):
-        data = super(SignatureCallbackView, self).get_context_data(**kwargs)
-        data['signature'] = self.signature
-        data['signer'] = self.signer
-        return data
-
-    def update_signature(self):
-        self.docusign_data = BeautifulSoup(self.request.body, ["lxml", "xml"])
-        status = self.docusign_data.EnvelopeStatus \
-                                   .RecipientStatuses \
-                                   .RecipientStatus \
-                                   .Status \
-                                   .string
-        if status is None:
-            raise Exception('Could not parse callback request body.')
-        status = status.lower()
-        allowed_status_list = ['sent', 'delivered', 'completed', 'declined']
-        if status not in allowed_status_list:
-            raise Exception('Unknown status {status}'.format(status=status))
-        callback = getattr(self, 'signature_{status}'.format(status=status))
-        return callback()
-
-    @property
-    def signature(self):
-        try:
-            return self._signature
-        except AttributeError:
-            envelope_id = self.docusign_data.EnvelopeStatus.EnvelopeID.string
-            self._signature = models.Signature.objects.get(
-                signature_backend_id=envelope_id)
-            return self._signature
-
-    @property
-    def signer(self):
-        try:
-            return self._signer
-        except AttributeError:
-            signer_id = self.docusign_data \
-                            .EnvelopeStatus \
-                            .RecipientStatuses \
-                            .RecipientStatus \
-                            .ClientUserId \
-                            .string
-            self._signer = self.signature.signers.get(pk=signer_id)
-            return self._signer
-
-    @property
-    def signature_backend(self):
-        try:
-            return self._signature_backend
-        except AttributeError:
-            self._signature_backend = self.get_signature_backend()
-            return self._signature_backend
-
+class SignatureCallbackView(django_docusign.SignatureCallbackView):
     def get_signature_backend(self):
         """Return signature backend instance."""
         backend_settings = docusign_settings(self.request)
@@ -214,40 +151,22 @@ class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
         )
         return signature_backend
 
-    def update_signer_status(self, status):
+    def update_signer(self, status, message=u''):
         self.signer.status = status
         self.signer.status_datetime = now()
+        self.signer.status_details = message
         self.signer.save()
 
-    def signature_sent(self):
-        self.update_signer_status(status='sent')
-
-    def signature_delivered(self):
-        self.update_signer_status(status='delivered')
-
-    def signature_completed(self):
-        envelope_id = self.signature.signature_backend_id
-        document_list = self.signature_backend \
-                            .docusign_client \
-                            .get_envelope_document_list(envelope_id)
-        document_id = document_list[0]['documentId']
-        document = self.signature_backend \
-                       .docusign_client \
-                       .get_envelope_document(envelope_id, document_id)
-        filename = self.signature.document.name
-        self.signature.document.delete(save=False)
-        self.signature.document.save(filename,
-                                     ContentFile(document.read()),
-                                     save=True)
-        document.close()
-        self.update_signer_status(status='completed')
-
-    def signature_declined(self):
-        self.update_signer_status(status='declined')
-        self.signer.status_details = self.docusign_data \
-                                         .EnvelopeStatus \
-                                         .RecipientStatuses \
-                                         .RecipientStatus \
-                                         .DeclineReason \
-                                         .string
-        self.signer.save()
+    def update_signature(self, status):
+        # In our model, there is only one document per signature.
+        document = list(self.signature_backend.get_docusign_documents(
+            self.signature))[0]
+        try:
+            # Replace old document by signed one.
+            filename = self.signature.document.name
+            self.signature.document.delete(save=False)
+            self.signature.document.save(filename,
+                                         ContentFile(document.read()),
+                                         save=True)
+        finally:
+            document.close()
