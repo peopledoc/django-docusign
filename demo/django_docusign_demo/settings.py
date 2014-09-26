@@ -39,6 +39,8 @@ STATIC_URL = '/static/'
 INSTALLED_APPS = (
     # The actual django-docusign demo.
     'django_docusign_demo',
+    'django_docusign',
+    'django_anysign',
     # Third-parties.
     'south',
     # Standard Django applications.

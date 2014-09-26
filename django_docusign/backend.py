@@ -48,6 +48,26 @@ class DocuSignBackend(django_anysign.SignatureBackend):
             signers.append(signer)
         return signers
 
+    def get_docusign_documents(self, signature):
+        """Generate list of documents for ``signature`` model instance.
+
+        Ignores special document "certificate".
+
+        Yields file-like objects.
+
+        .. warning:: Close returned documents!
+
+        """
+        envelope_id = signature.signature_backend_id
+        document_list = self.docusign_client \
+                            .get_envelope_document_list(envelope_id)
+        for document_data in document_list:
+            document_id = document_data['documentId']
+            if document_id != 'certificate':
+                document = self.docusign_client \
+                               .get_envelope_document(envelope_id, document_id)
+                yield document
+
     def create_signature(self, signature, callback_url=None):
         """Register ``signature`` in DocuSign service, return updated object.
 
@@ -70,7 +90,7 @@ class DocuSignBackend(django_anysign.SignatureBackend):
             i += 1
         # Prepare event notifications (callbacks).
         if callback_url is None:
-            callback_url = self.get_signature_callback_url(signature),
+            callback_url = self.get_signature_callback_url(signature)
         event_notification = pydocusign.EventNotification(
             url=callback_url,
         )
