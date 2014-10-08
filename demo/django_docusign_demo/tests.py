@@ -24,8 +24,13 @@ class SignatureFunctionalTestCase(django.test.TestCase):
             url = reverse('create_signature')
             with open(os.path.join(fixtures_dir, 'test.pdf')) as document_file:
                 data = {
-                    'signer_name': u'John Accentué',
-                    'signer_email': u'john@example.com',
+                    'signers-TOTAL_FORMS': u'2',
+                    'signers-INITIAL_FORMS': u'0',
+                    'signers-MAX_NUM_FORMS': u'1000',
+                    'signers-0-name': u'John Accentué',
+                    'signers-0-email': u'john@example.com',
+                    'signers-1-name': u'Paul Doe',
+                    'signers-1-email': u'paul@example.com',
                     'document': document_file,
                     'callback_url': u'http://tech.novapost.fr',
                 }
@@ -50,7 +55,7 @@ class SignatureFunctionalTestCase(django.test.TestCase):
             response['Location'].startswith('https://demo.docusign.net'))
 
     def _test_signature_callback(self, status, envelope_id, signer_id):
-        signer = self.signature.signers.get()
+        signer = self.signature.signers.first()
         self.assertEqual(signer.status, 'draft')
         url = reverse('anysign:signature_callback')
         request_body = open(
@@ -70,7 +75,7 @@ class SignatureFunctionalTestCase(django.test.TestCase):
             data=request_body,
         )
         self.assertEqual(response.status_code, 200)
-        signer = self.signature.signers.get()
+        signer = self.signature.signers.first()
         self.assertEqual(signer.status, status)
 
     def test_signature_sent_callback(self):
