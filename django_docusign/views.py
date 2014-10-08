@@ -1,37 +1,37 @@
 from django.views.generic.base import TemplateResponseMixin, ContextMixin, View
 
-from bs4 import BeautifulSoup
 import django_anysign
+import pydocusign
 
 
 class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
-    """Handle DocuSign's event notification."""
+    """Handle DocuSign's event notification.
+
+    This view can handle both recipient and envelope events.
+
+    """
     template_name = 'docusign/signature_callback.html'
 
     @property
-    def docusign_data(self):
-        """Data dictionary from DocuSign's request.
+    def docusign_parser(self):
+        """Parser for DocuSign's request.
 
         This is a shortcut property using a cache.
         If you want to adapt the implementation, consider overriding
-        :meth:`get_docusign_data`.
+        :meth:`get_docusign_parser`.
 
         """
         try:
-            return self._docusign_data
+            return self._docusign_parser
         except AttributeError:
-            self._docusign_data = self.get_docusign_data()
-            return self._docusign_data
+            self._docusign_parser = self.get_docusign_parser()
+            return self._docusign_parser
 
-    def get_docusign_data(self):
+    def get_docusign_parser(self):
         """Extract, validate and return data from DocuSign's request."""
-        data = BeautifulSoup(self.request.body, ["lxml", "xml"])
-        self.clean_status(data.EnvelopeStatus
-                              .RecipientStatuses
-                              .RecipientStatus
-                              .Status
-                              .string)
-        return data
+        parser = pydocusign.DocuSignCallbackParser(
+            xml_source=self.request.body)
+        return parser
 
     def clean_status(self, value):
         """Validate and return normalized value of ``status``."""
@@ -46,23 +46,28 @@ class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
     @property
     def envelope_status(self):
         """Envelope status, extracted from DocuSign input data."""
-        return self.docusign_data.EnvelopeStatus \
-                                 .RecipientStatuses \
-                                 .RecipientStatus \
-                                 .Status \
-                                 .string \
-                                 .lower()
+        return self.docusign_parser.envelope_status
 
     def post(self, request, *args, **kwargs):
         """Route request to signature callback depending on status.
 
-        Calls ``signature_{status}`` method.
+        Trigger events for latest signer and signature events: calls
+        ``signature_{status}`` and ``signer_{status}`` methods.
 
         """
+        # Trigger signature event.
+        signature_event = self.docusign_parser.envelope_events[-1]
         callback = getattr(self,
                            'signature_{status}'.format(
-                               status=self.envelope_status))
+                               status=signature_event['status']))
         callback()
+        # Trigger signer event.
+        signer_event = self.docusign_parser.recipient_events[-1]
+        callback = getattr(self,
+                           'signer_{status}'.format(
+                               status=signer_event['status']))
+        callback(signer_id=signer_event['recipient'])
+        # Render view.
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
 
@@ -74,7 +79,6 @@ class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
         """
         data = super(SignatureCallbackView, self).get_context_data(**kwargs)
         data['signature'] = self.signature
-        data['signer'] = self.signer
         return data
 
     @property
@@ -94,32 +98,8 @@ class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
 
     def get_signature(self):
         Signature = django_anysign.get_signature_model()
-        envelope_id = self.docusign_data.EnvelopeStatus.EnvelopeID.string
+        envelope_id = self.docusign_parser.envelope_id
         return Signature.objects.get(signature_backend_id=envelope_id)
-
-    @property
-    def signer(self):
-        """Signer model instance.
-
-        This is a shortcut property using a cache.
-        If you want to adapt the implementation, consider overriding
-        :meth:`get_signer`.
-
-        """
-        try:
-            return self._signer
-        except AttributeError:
-            self._signer = self.get_signer()
-            return self._signer
-
-    def get_signer(self):
-        signer_id = self.docusign_data \
-                        .EnvelopeStatus \
-                        .RecipientStatuses \
-                        .RecipientStatus \
-                        .ClientUserId \
-                        .string
-        return self.signature.signers.get(pk=signer_id)
 
     @property
     def signature_backend(self):
@@ -146,10 +126,23 @@ class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
         """
         return self.signature.signature_backend
 
-    def update_signer(self, status):
+    def update_signer(self, signer_id, status, status_datetime=None,
+                      message=u''):
+        """Update ``signer`` with ``status``.
+
+        Additional ``status_datetime`` argument is the datetime mentioned by
+        DocuSign.
+
+        """
         raise NotImplementedError()
 
-    def update_signature(self, status):
+    def update_signature(self, status, status_datetime=None):
+        """ Update signature with ``datetime``.
+
+        Additional ``status_datetime`` argument is the datetime mentioned by
+        DocuSign.
+
+        """
         raise NotImplementedError()
 
     def signature_sent(self):
@@ -158,7 +151,10 @@ class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
         Default implementation just calls :meth:`update_signer` with status.
 
         """
-        self.update_signer(status='sent')
+        self.update_signature(
+            status='sent',
+            status_datetime=self.docusign_parser.envelope_status_datetime(
+                'Sent'))
 
     def signature_delivered(self):
         """Handle 'delivered' status reported by DocuSign callback.
@@ -166,7 +162,10 @@ class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
         Default implementation just calls :meth:`update_signer` with status.
 
         """
-        self.update_signer(status='delivered')
+        self.update_signature(
+            status='delivered',
+            status_datetime=self.docusign_parser.envelope_status_datetime(
+                'Delivered'))
 
     def signature_completed(self):
         """Handle 'completed' status reported by DocuSign callback.
@@ -175,20 +174,73 @@ class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
         :meth:`update_signature` with status.
 
         """
-        self.update_signature(status='completed')
-        self.update_signer(status='completed')
+        self.update_signature(
+            status='completed',
+            status_datetime=self.docusign_parser.envelope_status_datetime(
+                'Completed'))
 
     def signature_declined(self):
-        """Handle 'declined' status reported by DocuSign callback.
+        """Handle 'declined' status reported by DocuSign callback."""
+        self.update_signature(
+            status='declined',
+            status_datetime=self.docusign_parser.envelope_status_datetime(
+                'Declined'))
 
-        Default implementation calls :meth:`update_signer` with status and
-        optional signer's message.
+    def signer_sent(self, signer_id):
+        """Handle 'Sent' status reported by DocuSign for signer."""
+        recipient = self.docusign_parser.recipients[signer_id]
+        self.update_signer(
+            signer_id,
+            status='sent',
+            status_datetime=recipient['Sent'],
+        )
+
+    def signer_delivered(self, signer_id):
+        """Handle 'Delivered' status reported by DocuSign for signer."""
+        recipient = self.docusign_parser.recipients[signer_id]
+        self.update_signer(
+            signer_id,
+            status='delivered',
+            status_datetime=recipient['Delivered'],
+        )
+
+    def signer_signed(self, signer_id):
+        """Handle 'Signed' event reported by DocuSign for signer.
+
+        Notice that recipient status is 'Completed' whereas event is 'Signed'.
 
         """
-        self.update_signer(status='declined',
-                           message=self.docusign_data
-                                       .EnvelopeStatus
-                                       .RecipientStatuses
-                                       .RecipientStatus
-                                       .DeclineReason
-                                       .string)
+        recipient = self.docusign_parser.recipients[signer_id]
+        self.update_signer(
+            signer_id,
+            status='completed',
+            status_datetime=recipient['Completed'],
+        )
+
+    def signer_declined(self, signer_id):
+        """Handle 'Declined' status reported by DocuSign for signer."""
+        recipient = self.docusign_parser.recipients[signer_id]
+        self.update_signer(
+            signer_id,
+            status='declined',
+            status_datetime=recipient['Declined'],
+            message=recipient['DeclineReason'],
+        )
+
+    def signer_authenticationfailed(self, signer_id):
+        """Handle 'AuthenticationFailed' status for signer."""
+        recipient = self.docusign_parser.recipients[signer_id]
+        self.update_signer(
+            signer_id,
+            status='authentication_failed',
+            status_datetime=recipient['AuthenticationFailed'],
+        )
+
+    def signer_autoresponded(self, signer_id):
+        """Handle 'AutoResponded' status reported by DocuSign for signer."""
+        recipient = self.docusign_parser.recipients[signer_id]
+        self.update_signer(
+            signer_id,
+            status='auto_responded',
+            status_datetime=recipient['AutoResponded'],
+        )

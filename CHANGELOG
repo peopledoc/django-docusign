@@ -8,7 +8,19 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.5 (unreleased)
 ----------------
 
-- Nothing changed yet.
+Improvements around multiple signers.
+
+- Feature #13 - ``DocuSignCallbackView`` also handles recipient notifications.
+
+- Feature #11 - Improved ordering of signers, better management of DocuSign's
+  ``routingOrder``.
+
+- Feature #12 - Demo project shows how to implement signature of multiple
+  signers.
+
+- Bugfix #9 - Fixed default value of ``signer_return_url`` in
+  ``DocuSignBackend.post_recipient_view()``. Default value was not assigned
+  if value was not passed as argument.
 
 
 0.4 (2014-09-26)

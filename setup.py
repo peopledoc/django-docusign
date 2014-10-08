@@ -36,11 +36,9 @@ KEYWORDS = [
 ]
 PACKAGES = [NAME.replace('-', '_')]
 REQUIREMENTS = [
-    'beautifulsoup4',
     'Django<1.7',
-    'django-anysign',
-    'lxml',
-    'pydocusign>=0.4',
+    'django-anysign>=0.3',
+    'pydocusign>=0.6',
     'setuptools',
 ]
 ENTRY_POINTS = {}

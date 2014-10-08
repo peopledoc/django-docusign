@@ -84,11 +84,13 @@ class CreateSignatureView(FormView):
             signature_type=signature_type,
             document=self.request.FILES['document'],
         )
-        # Add signers (only one in this implementation).
-        signature.signers.create(
-            full_name=form.cleaned_data['signer_name'],
-            email=form.cleaned_data['signer_email'],
-        )
+        # Add signers.
+        for position, signer_data in enumerate(self.cleaned_data['signers']):
+            signature.signers.create(
+                full_name=signer_data['name'],
+                email=signer_data['email'],
+                signing_order=position + 1,  # Position starts at 1.
+            )
         # Create signature, backend side.
         self.create_signature(signature)
         return super(CreateSignatureView, self).form_valid(form)
@@ -151,13 +153,15 @@ class SignatureCallbackView(django_docusign.SignatureCallbackView):
         )
         return signature_backend
 
-    def update_signer(self, status, message=u''):
-        self.signer.status = status
-        self.signer.status_datetime = now()
-        self.signer.status_details = message
-        self.signer.save()
+    def update_signer(self, signer_id, status, status_datetime=None,
+                      message=u''):
+        signer = django_anysign.get_signer_model().objects.get(pk=signer_id)
+        signer.status = status
+        signer.status_datetime = status_datetime or now()
+        signer.status_details = message
+        signer.save()
 
-    def update_signature(self, status):
+    def update_signature(self, status, status_datetime=None):
         # In our model, there is only one document per signature.
         document = list(self.signature_backend.get_docusign_documents(
             self.signature))[0]

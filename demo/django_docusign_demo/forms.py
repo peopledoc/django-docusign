@@ -1,6 +1,10 @@
 """Demo forms for `django-docusign`."""
 from django import forms
+from django.forms.formsets import formset_factory
 from django.utils.translation import ugettext_lazy as _
+
+from django_docusign import SignerForm
+from formsetfield.fields import FormSetField
 
 
 class SettingsForm(forms.Form):
@@ -34,12 +38,8 @@ class CreateSignatureForm(forms.Form):
     document = forms.FileField(
         label=_('document'),
     )
-    signer_name = forms.CharField(
-        label=_("Signer's name"),
-        max_length=50,
-    )
-    signer_email = forms.EmailField(
-        label=_("Signer's email"),
+    signers = FormSetField(
+        formset_factory(SignerForm, extra=2),
     )
     callback_url = forms.URLField(
         label=_('API callback URL'),
