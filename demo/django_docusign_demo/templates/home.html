@@ -26,10 +26,14 @@
           <dd>{{ signature.pk }}<dd>
           <dt>{% trans "document" %}</dt>
           <dd>{{ signature.document.name }}<dd>
-          <dt>{% trans "signer" %}</dt>
-          {% with signature.signers.all.0 as signer %}
-            <dd>{{ signer.email }} =&gt; <a href="{{ signature.signers.all.0.get_absolute_url }}">{% trans "sign" %}</a> [{{ signer.status }}]<dd>
-          {% endwith %}
+          <dt>{% trans "signers" %}</dt>
+          <dd>
+            <ul>
+              {% for signer in signature.signers.all %}
+                <li>{{ signer.email }} =&gt; <a href="{{ signer.get_absolute_url }}">{% trans "sign" %}</a> [{{ signer.status }}]</li>
+              {% endfor %}
+            </ul>
+          </dd>
           <dt>{% trans "backend" %}</dt>
           <dd>{{ signature.signature_backend.code }}<dd>
           <dt>{% trans "backend ID" %}</dt>

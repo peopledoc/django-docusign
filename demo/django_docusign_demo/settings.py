@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'django_docusign',
     'django_anysign',
     # Third-parties.
+    'formsetfield',
     'south',
     # Standard Django applications.
     'django.contrib.auth',
@@ -54,6 +55,7 @@ INSTALLED_APPS = (
     'django_nose',
 )
 
+USE_TZ = True
 
 # BEGIN settings.ANYSIGN.
 ANYSIGN = {

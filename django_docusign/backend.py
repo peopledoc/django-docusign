@@ -36,7 +36,7 @@ class DocuSignBackend(django_anysign.SignatureBackend):
 
         """
         signers = []
-        for signer in signature.signers.all():
+        for signer in signature.signers.all().order_by('signing_order'):
             tabs = self.get_docusign_tabs(signer)
             signer = pydocusign.Signer(
                 email=signer.email,
@@ -120,7 +120,10 @@ class DocuSignBackend(django_anysign.SignatureBackend):
                 name=every_signer.full_name,
                 recipientId=every_signer.pk,
                 clientUserId=every_signer.pk,
-            ) for every_signer in signer.signature.signers.all()
+            ) for every_signer in signer.signature
+                                        .signers
+                                        .all()
+                                        .order_by('signing_order')
         ]
         # Create envelope with embedded signing.
         envelope = pydocusign.Envelope(
@@ -128,9 +131,9 @@ class DocuSignBackend(django_anysign.SignatureBackend):
             recipients=signers,
         )
         if position is None:
-            position = list(signer.signature.signers.all()).index(signer)
+            position = signer.signing_order
         if signer_return_url is None:
-            self.get_signer_return_url(signer)
+            signer_return_url = self.get_signer_return_url(signer)
         envelope.get_recipients(client=self.docusign_client)
         return envelope.post_recipient_view(
             client=self.docusign_client,
