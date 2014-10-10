@@ -32,6 +32,7 @@ class SignatureFunctionalTestCase(django.test.TestCase):
                     'signers-1-name': u'Paul Doe',
                     'signers-1-email': u'paul@example.com',
                     'document': document_file,
+                    'title': u'A very simple PDF document',
                     'callback_url': u'http://tech.novapost.fr',
                 }
                 response = self.client.post(url, data)

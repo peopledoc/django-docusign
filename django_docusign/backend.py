@@ -68,7 +68,8 @@ class DocuSignBackend(django_anysign.SignatureBackend):
                                .get_envelope_document(envelope_id, document_id)
                 yield document
 
-    def create_signature(self, signature, callback_url=None):
+    def create_signature(self, signature, callback_url=None,
+                         subject=u'', blurb=u''):
         """Register ``signature`` in DocuSign service, return updated object.
 
         This method calls ``save()`` on ``signature``.
@@ -96,8 +97,8 @@ class DocuSignBackend(django_anysign.SignatureBackend):
         )
         # Create envelope with embedded signing.
         envelope = pydocusign.Envelope(
-            emailSubject='This is the subject',
-            emailBlurb='This is the body',
+            emailSubject=subject,
+            emailBlurb=blurb,
             eventNotification=event_notification,
             status=pydocusign.Envelope.STATUS_SENT,
             documents=documents,

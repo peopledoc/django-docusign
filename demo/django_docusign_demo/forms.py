@@ -38,8 +38,14 @@ class CreateSignatureForm(forms.Form):
     document = forms.FileField(
         label=_('document'),
     )
+    title = forms.CharField(
+        label=_('title'),
+        max_length=100,
+        help_text=_("Title for the document."),
+    )
     signers = FormSetField(
         formset_factory(SignerForm, extra=2),
+        label=_('signers'),
     )
     callback_url = forms.URLField(
         label=_('API callback URL'),

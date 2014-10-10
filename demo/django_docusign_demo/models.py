@@ -15,6 +15,12 @@ class Signature(django_anysign.SignatureFactory(SignatureType)):
         blank=True,
         null=True,
     )
+    document_title = models.CharField(
+        _('title'),
+        max_length=100,
+        blank=True,
+        default=u'',
+    )
 
     def signature_documents(self):
         """Return list of documents (file wrappers) to sign.
