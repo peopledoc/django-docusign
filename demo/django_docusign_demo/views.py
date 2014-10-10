@@ -83,6 +83,7 @@ class CreateSignatureView(FormView):
         signature = models.Signature.objects.create(
             signature_type=signature_type,
             document=self.request.FILES['document'],
+            document_title=self.cleaned_data['title'],
         )
         # Add signers.
         for position, signer_data in enumerate(self.cleaned_data['signers']):
@@ -116,7 +117,9 @@ class CreateSignatureView(FormView):
         """Create signature backend-side."""
         self.signature_backend.create_signature(
             signature,
-            callback_url=self.cleaned_data['callback_url'])
+            callback_url=self.cleaned_data['callback_url'],
+            subject=signature.document_title,
+        )
 
 
 class SignerView(SingleObjectMixin, RedirectView):
