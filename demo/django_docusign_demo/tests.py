@@ -1,14 +1,111 @@
 # coding=utf8
+from contextlib import contextmanager
 import os
+import unittest
+try:
+    from unittest import mock
+except ImportError:  # Python 2 fallback.
+    import mock
 
 from django.core.urlresolvers import reverse
 import django.test
 
-from django_docusign_demo import models
+from django_docusign_demo import models, views
 
 
 here = os.path.abspath(os.path.dirname(__file__))
 fixtures_dir = os.path.join(here, 'fixtures')
+
+
+@contextmanager
+def temporary_env():
+    former_environ = dict(os.environ)  # Backup.
+    try:
+        yield os.environ
+    finally:
+        for key, value in former_environ.items():
+            os.environ[key] = value  # Restore.
+
+
+class DocuSignSettingTestCase(unittest.TestCase):
+    """Tests around ``docusign_setting()`` utility function."""
+    def test_session(self):
+        """django_docusign.views.docusign_setting reads conf in session."""
+        key = 'fake_key'
+        value = 'fake_value'
+        request = mock.Mock()
+        request.session = {key: value}  # In session.
+        self.assertTrue(key not in os.environ)  # Not in environ.
+        self.assertEqual(views.docusign_setting(request, key), value)
+
+    def test_environ(self):
+        """django_docusign.views.docusign_setting reads env vars."""
+        with temporary_env():
+            key = 'fake_key'
+            value = 'fake_value'
+            request = mock.Mock()
+            request.session = {}  # Not in session.
+            os.environ['PYDOCUSIGN_TEST_FAKE_KEY'] = value  # In environ.
+            self.assertEqual(views.docusign_setting(request, key), value)
+
+    def test_fallback(self):
+        """django_docusign.views.docusign_setting reads session before env."""
+        with temporary_env():
+            key = 'fake_key'
+            request = mock.Mock()
+            request.session = {key: 'session'}  # In session.
+            os.environ['PYDOCUSIGN_TEST_FAKE_KEY'] = 'environ'  # In environ.
+            self.assertEqual(views.docusign_setting(request, key), 'session')
+
+
+class DocuSignSettingsTestCase(unittest.TestCase):
+    """Tests around ``docusign_settings()`` utility function."""
+    def test_easy(self):
+        """django_docusign.views.docusign_setting reads conf in session."""
+        with temporary_env():
+            request = mock.Mock()
+            request.session = {'root_url': 'URL',
+                               'username': 'NAME',
+                               'password': 'PASS'}
+            os.environ['PYDOCUSIGN_TEST_PASS'] = 'DEFAULT_PASS'
+            os.environ['PYDOCUSIGN_TEST_INTEGRATOR_KEY'] = 'INTEGRATOR'
+            self.assertEqual(views.docusign_settings(request),
+                             {'root_url': 'URL',
+                              'username': 'NAME',
+                              'password': 'PASS',
+                              'integrator_key': 'INTEGRATOR'})
+
+
+class SettingsViewTestCase(django.test.TestCase):
+    """Tests around ``SettingsView``."""
+    def test_session_settings(self):
+        """SettingsView actually stores settings in session."""
+        with temporary_env():
+            # 1. Make sure we are using settings from environment.
+            os.environ['PYDOCUSIGN_TEST_ROOT_URL'] = 'ENV'
+            home_url = reverse('home')
+            response = self.client.get(home_url)
+            request = response._request
+            self.assertTrue('root_url' not in request.session)
+            self.assertEqual(views.docusign_settings(request)['root_url'],
+                             'ENV')
+            # 2. POST settings, make sure we use settings in session.
+            settings_url = reverse('settings')
+            api_url = 'http://example.com/root'
+            data = {
+                'root_url': api_url,
+                'username': 'NAME',
+                'password': 'PASS',
+                'integrator_key': 'INTEGRATOR',
+                'signer_return_url': 'http://example.com/',
+                'callback_url': 'http://example.com/',
+            }
+            response = self.client.post(settings_url, data, follow=True)
+            self.assertRedirects(response, home_url)
+            request = response._request
+            self.assertEqual(request.session['root_url'], api_url)
+            self.assertEqual(views.docusign_settings(request)['root_url'],
+                             api_url)
 
 
 class SignatureFunctionalTestCase(django.test.TestCase):

@@ -16,7 +16,8 @@ from django_docusign_demo import models
 
 def docusign_setting(request, name):
     """Return setting by ``name`` from request.session or environ."""
-    return request.session.get(name, os.environ.get(name))
+    environ_name = 'PYDOCUSIGN_TEST_{0}'.format(name.upper())
+    return request.session.get(name, os.environ.get(environ_name))
 
 
 def docusign_settings(request):
@@ -25,13 +26,10 @@ def docusign_settings(request):
     Values are read from session, and fallback to environ.
 
     """
-    return {
-        'root_url': docusign_setting(request, 'PYDOCUSIGN_TEST_ROOT_URL'),
-        'username': docusign_setting(request, 'PYDOCUSIGN_TEST_USERNAME'),
-        'password': docusign_setting(request, 'PYDOCUSIGN_TEST_PASSWORD'),
-        'integrator_key': docusign_setting(
-            request, 'PYDOCUSIGN_TEST_INTEGRATOR_KEY'),
-    }
+    data = {}
+    for key in 'root_url', 'username', 'password', 'integrator_key':
+        data[key] = docusign_setting(request, key)
+    return data
 
 
 class HomeView(TemplateView):
