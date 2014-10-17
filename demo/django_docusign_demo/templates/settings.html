@@ -6,6 +6,7 @@
 
 {% block content %}
   <p>{% trans "The following settings will be stored in the session." %}</p>
+  {{ form.non_field_errors }}
   <form method="POST" action=".">
     {% csrf_token %}
     {{ form.as_p }}

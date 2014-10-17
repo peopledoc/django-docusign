@@ -41,6 +41,8 @@ REQUIREMENTS = [
     'pydocusign>=0.6',
     'setuptools',
 ]
+if IS_PYTHON2:
+    REQUIREMENTS.append('mock')
 ENTRY_POINTS = {}
 TEST_REQUIREMENTS = []
 CMDCLASS = {}
