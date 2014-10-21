@@ -33,16 +33,6 @@ class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
             xml_source=self.request.body)
         return parser
 
-    def clean_status(self, value):
-        """Validate and return normalized value of ``status``."""
-        status = value.lower()
-        if status is None:
-            raise Exception('Could not parse callback request body.')
-        allowed_status_list = ['sent', 'delivered', 'completed', 'declined']
-        if status not in allowed_status_list:
-            raise Exception('Unknown status {status}'.format(status=status))
-        return status
-
     @property
     def envelope_status(self):
         """Envelope status, extracted from DocuSign input data."""
