@@ -16,6 +16,9 @@ Bugfixes & refactoring.
 - Bug #18 - In demo application, replaced using ``iterator.next()`` instead of
   ``list(iterator)[0]``.
 
+- Refactoring #19 - Removed deprecaded ``SignatureCallbackView.clean_status``.
+  Use ``pydocusign.DocuSignCallbackParser.envelope_status`` instead.
+
 
 0.6 (2014-10-10)
 ----------------
