@@ -13,6 +13,9 @@ Bugfixes & refactoring.
 - Bug #17 - In demo application, added tests around settings view... and fixed
   it, so that it works as expected.
 
+- Bug #18 - In demo application, replaced using ``iterator.next()`` instead of
+  ``list(iterator)[0]``.
+
 
 0.6 (2014-10-10)
 ----------------
