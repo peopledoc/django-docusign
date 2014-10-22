@@ -10,6 +10,9 @@ except ImportError:  # Python 2 fallback.
 from django.core.urlresolvers import reverse
 import django.test
 
+import pydocusign
+import pydocusign.test
+
 from django_docusign_demo import models, views
 
 
@@ -109,7 +112,7 @@ class SettingsViewTestCase(django.test.TestCase):
 
 
 class SignatureFunctionalTestCase(django.test.TestCase):
-    """Functional test suite for 'create_signature' URL."""
+    """Functional test suite for signature workflow."""
     #: Class-level signature instance, in order to reduce API calls.
     _signature = None
 
@@ -117,27 +120,28 @@ class SignatureFunctionalTestCase(django.test.TestCase):
     def signature(self):
         """Get or create signature instance."""
         if self._signature is None:
-            self.assertEqual(models.Signature.objects.all().count(), 0)
-            url = reverse('create_signature')
-            with open(os.path.join(fixtures_dir, 'test.pdf')) as document_file:
-                data = {
-                    'signers-TOTAL_FORMS': u'2',
-                    'signers-INITIAL_FORMS': u'0',
-                    'signers-MAX_NUM_FORMS': u'1000',
-                    'signers-0-name': u'John Accentué',
-                    'signers-0-email': u'john@example.com',
-                    'signers-1-name': u'Paul Doe',
-                    'signers-1-email': u'paul@example.com',
-                    'document': document_file,
-                    'title': u'A very simple PDF document',
-                    'callback_url': u'http://tech.novapost.fr',
-                }
-                response = self.client.post(url, data)
-            self.assertEqual(response.status_code, 302)
-            self.assertRedirects(response, reverse('home'))
-            self.assertEqual(models.Signature.objects.all().count(), 1)
-            self._signature = models.Signature.objects.get()
+            self._signature = self.create_signature()
         return self._signature
+
+    def create_signature(self):
+        url = reverse('create_signature')
+        with open(os.path.join(fixtures_dir, 'test.pdf')) as document_file:
+            data = {
+                'signers-TOTAL_FORMS': u'2',
+                'signers-INITIAL_FORMS': u'0',
+                'signers-MAX_NUM_FORMS': u'1000',
+                'signers-0-name': u'John Accentué',
+                'signers-0-email': u'john@example.com',
+                'signers-1-name': u'Paul Doe',
+                'signers-1-email': u'paul@example.com',
+                'document': document_file,
+                'title': u'A very simple PDF document',
+                'callback_url': u'http://tech.novapost.fr',
+            }
+            response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('home'))
+        return models.Signature.objects.order_by('-pk').first()
 
     def test_form_valid(self):
         """Can create a signature using 'create_signature' URL."""
@@ -152,58 +156,97 @@ class SignatureFunctionalTestCase(django.test.TestCase):
         self.assertTrue(
             response['Location'].startswith('https://demo.docusign.net'))
 
-    def _test_signature_callback(self, status, envelope_id, signer_id):
-        signer = self.signature.signers.first()
-        self.assertEqual(signer.status, 'draft')
+    def send_signature_callback(self, data):
         url = reverse('anysign:signature_callback')
-        request_body = open(
-            os.path.join(fixtures_dir,
-                         'callback_{status}.xml'.format(status=status))).read()
-        request_body = request_body.replace(
-            '<EnvelopeID>{uuid}</EnvelopeID>'.format(uuid=envelope_id),
-            '<EnvelopeID>{uuid}</EnvelopeID>'.format(
-                uuid=self.signature.signature_backend_id))
-        request_body = request_body.replace(
-            '<ClientUserId>{id}</ClientUserId>'.format(id=signer_id),
-            '<ClientUserId>{id}</ClientUserId>'.format(
-                id=signer.pk))
+        request_body = pydocusign.test.generate_notification_callback_body(
+            data=data)
         response = self.client.post(
             url,
             content_type='text/xml',
             data=request_body,
         )
         self.assertEqual(response.status_code, 200)
-        signer = self.signature.signers.first()
-        self.assertEqual(signer.status, status)
+        return response
 
-    def test_signature_sent_callback(self):
+    def test_signature_callback(self):
         """Callback view handles DocuSign's 'sent' status."""
-        self._test_signature_callback(
-            'sent',
-            '62d077fc-e912-4854-acac-da30a7c9854b',
-            '6',
-        )
+        signature = self.create_signature()
+        self.assertEqual(signature.signers.get(signing_order=1).status,
+                         'draft')
+        self.assertEqual(signature.signers.get(signing_order=2).status,
+                         'draft')
+        signers = signature.signers.all().order_by('signing_order')
+        data = {
+            "RecipientStatuses": [
+                {
+                    "Email": signer.email,
+                    "UserName": signer.full_name,
+                    "ClientUserId": signer.pk,
+                    "Status": pydocusign.Recipient.STATUS_SENT,
+                    "Sent": "2014-10-06T01:10:01.000012",
+                } for signer in signers
 
-    def test_signature_delivered_callback(self):
-        """Callback view handles DocuSign's 'delivered' status."""
-        self._test_signature_callback(
-            'delivered',
-            '62d077fc-e912-4854-acac-da30a7c9854b',
-            '6',
-        )
-
-    def test_signature_completed_callback(self):
-        """Callback view handles DocuSign's 'completed' status."""
-        self._test_signature_callback(
-            'completed',
-            '62d077fc-e912-4854-acac-da30a7c9854b',
-            '6',
-        )
-
-    def test_signature_declined_callback(self):
-        """Callback view handles DocuSign's 'declined' status."""
-        self._test_signature_callback(
-            'declined',
-            'e9708096-6e41-48e6-b24f-334aadaa93af',
-            '9',
-        )
+            ],
+            "EnvelopeId": signature.signature_backend_id,
+            "Subject": signature.document_title,
+            "UserName": "Bob",
+            "Created": "2014-10-06T01:10:00.000012",
+            "Sent": "2014-10-06T01:10:01.000012",
+        }
+        # First, we receive "sent" callback.
+        self.send_signature_callback(data)
+        signature = models.Signature.objects.get(pk=signature.pk)
+        self.assertEqual(signature.signers.get(signing_order=1).status,
+                         'sent')
+        self.assertEqual(signature.signers.get(signing_order=2).status,
+                         'sent')
+        # Then, envelope is "delivered" to recipients.
+        data['RecipientStatuses'][0]['Status'] = "Delivered"
+        data['RecipientStatuses'][0]['Delivered'] = "2014-10-06" \
+                                                    "T01:10:02.000012"
+        self.send_signature_callback(data)
+        signature = models.Signature.objects.get(pk=signature.pk)
+        self.assertEqual(signature.signers.get(signing_order=1).status,
+                         'delivered')
+        self.assertEqual(signature.signers.get(signing_order=2).status,
+                         'sent')
+        # A recipient signs.
+        data['RecipientStatuses'][0]['Status'] = "Signed"
+        data['RecipientStatuses'][0]['Signed'] = "2014-10-06" \
+                                                 "T01:10:03.000012"
+        self.send_signature_callback(data)
+        signature = models.Signature.objects.get(pk=signature.pk)
+        self.assertEqual(signature.status, 'sent')
+        self.assertEqual(signature.signers.get(signing_order=1).status,
+                         'completed')
+        self.assertEqual(signature.signers.get(signing_order=2).status,
+                         'sent')
+        # Last recipient signs.
+        data['RecipientStatuses'][1]['Status'] = "Signed"
+        data['RecipientStatuses'][1]['Signed'] = "2014-10-06" \
+                                                 "T01:10:04.000012"
+        data['Status'] = "Completed"
+        data['Completed'] = "2014-10-06T01:10:04.000012"
+        self.send_signature_callback(data)
+        signature = models.Signature.objects.get(pk=signature.pk)
+        self.assertEqual(signature.status, 'completed')
+        self.assertEqual(signature.signers.get(signing_order=1).status,
+                         'completed')
+        self.assertEqual(signature.signers.get(signing_order=2).status,
+                         'completed')
+        # But we could also have received "decline" callback.
+        del data['Completed']
+        del data['RecipientStatuses'][1]['Signed']
+        data['RecipientStatuses'][1]['Status'] = "Declined"
+        data['RecipientStatuses'][1]['Declined'] = "2014-10-06" \
+                                                   "T01:10:05.000012"
+        data['RecipientStatuses'][1]['DeclineReason'] = "Do not sign a test!"
+        data['Status'] = "Declined"
+        data['Declined'] = "2014-10-06T01:10:05.000012"
+        self.send_signature_callback(data)
+        signature = models.Signature.objects.get(pk=signature.pk)
+        self.assertEqual(signature.status, 'declined')
+        self.assertEqual(signature.signers.get(signing_order=1).status,
+                         'completed')
+        self.assertEqual(signature.signers.get(signing_order=2).status,
+                         'declined')

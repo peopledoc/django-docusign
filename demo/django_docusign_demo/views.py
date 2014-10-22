@@ -163,14 +163,17 @@ class SignatureCallbackView(django_docusign.SignatureCallbackView):
         signer.save()
 
     def update_signature(self, status, status_datetime=None):
-        document = self.signature_backend.get_docusign_documents(
-            self.signature).next()  # In our model, there is only one document.
-        try:
-            # Replace old document by signed one.
-            filename = self.signature.document.name
-            self.signature.document.delete(save=False)
-            self.signature.document.save(filename,
-                                         ContentFile(document.read()),
-                                         save=True)
-        finally:
-            document.close()
+        self.signature.status = status
+        self.signature.save()
+        if status == 'completed':
+            document = self.signature_backend.get_docusign_documents(
+                self.signature).next()  # In our model, there is only one doc.
+            try:
+                # Replace old document by signed one.
+                filename = self.signature.document.name
+                self.signature.document.delete(save=False)
+                self.signature.document.save(filename,
+                                             ContentFile(document.read()),
+                                             save=True)
+            finally:
+                document.close()

@@ -8,7 +8,18 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.7 (unreleased)
 ----------------
 
-Bugfixes & refactoring.
+Bugfixes & refactoring, mostly around ``SignatureCallbackView``.
+
+- Bug #20 - In ``SignatureCallbackView``:
+
+  * ``update_signature`` is not triggered if signature is not updated, when a
+    signer, not the last, has just signed the envelope.
+
+  * ``update_signer`` is triggered for every signer when signature and signers
+    have "Sent" status (signature has just been created in embedded mode).
+
+- Features #16 and #20 - In demo application, ``SignatureCallbackView`` is
+  tested using ``pydocusign``'s templates.
 
 - Bug #17 - In demo application, added tests around settings view... and fixed
   it, so that it works as expected.
