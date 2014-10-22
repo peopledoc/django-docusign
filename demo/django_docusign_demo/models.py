@@ -21,6 +21,23 @@ class Signature(django_anysign.SignatureFactory(SignatureType)):
         blank=True,
         default=u'',
     )
+    status = models.CharField(
+        _('status'),
+        max_length=50,
+        db_index=True,
+        choices=(
+            ('draft', _('draft')),
+            ('sent', _('sent')),
+            ('delivered', _('delivered')),
+            ('completed', _('completed')),
+            ('declined', _('declined')),
+        ),
+        default='draft',
+    )
+    status_datetime = models.DateTimeField(
+        _('status datetime'),
+        auto_now_add=True,
+    )
 
     def signature_documents(self):
         """Return list of documents (file wrappers) to sign.
@@ -53,7 +70,6 @@ class Signer(django_anysign.SignerFactory(Signature)):
             ('delivered', _('delivered')),
             ('completed', _('completed')),
             ('declined', _('declined')),
-            ('cancelled', _('cancelled')),
         ),
         default='draft',
     )

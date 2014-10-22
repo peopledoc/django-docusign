@@ -38,7 +38,7 @@ PACKAGES = [NAME.replace('-', '_')]
 REQUIREMENTS = [
     'Django<1.7',
     'django-anysign>=0.3',
-    'pydocusign>=0.6',
+    'pydocusign>=0.7.2',
     'setuptools',
 ]
 if IS_PYTHON2:

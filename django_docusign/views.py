@@ -45,18 +45,33 @@ class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
         ``signature_{status}`` and ``signer_{status}`` methods.
 
         """
-        # Trigger signature event.
         signature_event = self.docusign_parser.envelope_events[-1]
-        callback = getattr(self,
-                           'signature_{status}'.format(
-                               status=signature_event['status']))
+        signer_events = []
+        if signature_event['status'] == pydocusign.Envelope.STATUS_SENT:
+            # If signature status is "sent" and all signers are "sent", then
+            # trigger "sent" event for signature and all signers.
+            if all([True
+                    for signer_event in self.docusign_parser.recipient_events
+                    if signer_event['status'] == 'sent']):
+                signer_events = self.docusign_parser.recipient_events
+            # Else, do not care about "sent" event for signature.
+            else:
+                signature_event = None
+                signer_events = [self.docusign_parser.recipient_events[-1]]
+        else:
+            signer_events = [self.docusign_parser.recipient_events[-1]]
+        # Trigger signature event.
+        if signature_event:
+            callback = getattr(self,
+                               'signature_{status}'.format(
+                                   status=signature_event['status'].lower()))
         callback()
-        # Trigger signer event.
-        signer_event = self.docusign_parser.recipient_events[-1]
-        callback = getattr(self,
-                           'signer_{status}'.format(
-                               status=signer_event['status']))
-        callback(signer_id=signer_event['recipient'])
+        # Trigger signer events.
+        for signer_event in signer_events:
+            callback = getattr(self,
+                               'signer_{status}'.format(
+                                   status=signer_event['status'].lower()))
+            callback(signer_id=signer_event['recipient'])
         # Render view.
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
