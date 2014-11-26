@@ -25,12 +25,6 @@ class SettingsForm(forms.Form):
         label=_('integrator key'),
         max_length=50,
     )
-    signer_return_url = forms.URLField(
-        label=_('signer return URL'),
-    )
-    callback_url = forms.URLField(
-        label=_('callback URL'),
-    )
 
 
 class CreateSignatureForm(forms.Form):
@@ -45,6 +39,34 @@ class CreateSignatureForm(forms.Form):
     )
     signers = FormSetField(
         formset_factory(SignerForm, extra=2),
+        label=_('signers'),
+    )
+    callback_url = forms.URLField(
+        label=_('API callback URL'),
+    )
+
+
+class SignerTemplateForm(SignerForm):
+    """Signer creation form for template mode."""
+    role_name = forms.CharField(
+        label=_('role name'),
+        max_length=100,
+    )
+
+
+class CreateSignatureTemplateForm(forms.Form):
+    """Signature from template creation form."""
+    template_id = forms.CharField(
+        label=_('template id'),
+        max_length=36,
+    )
+    title = forms.CharField(
+        label=_('title'),
+        max_length=100,
+        help_text=_("Title for the document."),
+    )
+    signers = FormSetField(
+        formset_factory(SignerTemplateForm, extra=2),
         label=_('signers'),
     )
     callback_url = forms.URLField(

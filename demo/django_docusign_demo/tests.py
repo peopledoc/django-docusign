@@ -100,8 +100,6 @@ class SettingsViewTestCase(django.test.TestCase):
                 'username': 'NAME',
                 'password': 'PASS',
                 'integrator_key': 'INTEGRATOR',
-                'signer_return_url': 'http://example.com/',
-                'callback_url': 'http://example.com/',
             }
             response = self.client.post(settings_url, data, follow=True)
             self.assertRedirects(response, home_url)
@@ -250,3 +248,32 @@ class SignatureFunctionalTestCase(django.test.TestCase):
                          'completed')
         self.assertEqual(signature.signers.get(signing_order=2).status,
                          'declined')
+
+
+class SignatureTemplateFunctionalTestCase(SignatureFunctionalTestCase):
+    """Functional test suite for signature workflow."""
+
+    def create_signature(self):
+        url = reverse('create_signature_template')
+        response = self.client.get(url)
+        # get template_id from initial data
+        # must be defined in environment variable PYDOCUSIGN_TEST_TEMPLATE_ID
+        template_id = response.context['form'].initial['template_id']
+        data = {
+            'signers-TOTAL_FORMS': u'2',
+            'signers-INITIAL_FORMS': u'0',
+            'signers-MAX_NUM_FORMS': u'1000',
+            'signers-0-name': u'John Accentué',
+            'signers-0-email': u'john@example.com',
+            'signers-0-role_name': u'employee',
+            'signers-1-name': u'Paul Doe',
+            'signers-1-email': u'paul@example.com',
+            'signers-1-role_name': u'employer',
+            'template_id': template_id,
+            'title': u'A very simple PDF document',
+            'callback_url': u'http://tech.novapost.fr',
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('home'))
+        return models.Signature.objects.order_by('-pk').first()
