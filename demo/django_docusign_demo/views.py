@@ -78,7 +78,8 @@ class CreateSignatureView(FormView):
         self.cleaned_data = form.cleaned_data
         # Prepare signature instance with uploaded document, Django side.
         (signature_type, created) = models.SignatureType.objects.get_or_create(
-            signature_backend_code='docusign')
+            signature_backend_code='docusign',
+            docusign_template_id='')
         signature = models.Signature.objects.create(
             signature_type=signature_type,
             document=self.request.FILES['document'],
@@ -137,18 +138,17 @@ class CreateSignatureTemplateView(CreateSignatureView):
         self.cleaned_data = form.cleaned_data
         # Prepare signature instance with uploaded document, Django side.
         (signature_type, created) = models.SignatureType.objects.get_or_create(
-            signature_backend_code='docusign')
+            signature_backend_code='docusign',
+            docusign_template_id=self.cleaned_data['template_id'])
         signature = models.Signature.objects.create(
             signature_type=signature_type,
             document_title=self.cleaned_data['title'],
-            docusign_template_id=self.cleaned_data['template_id']
         )
         # Add signers.
         for position, signer_data in enumerate(self.cleaned_data['signers']):
             signature.signers.create(
                 full_name=signer_data['name'],
                 email=signer_data['email'],
-                docusign_role_name=signer_data['role_name'],
                 signing_order=position + 1,  # Position starts at 1.
             )
         # Create signature, backend side.

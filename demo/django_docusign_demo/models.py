@@ -5,7 +5,11 @@ import django_anysign
 
 
 class SignatureType(django_anysign.SignatureType):
-    pass
+    docusign_template_id = models.CharField(
+        _('DocuSign template id'),
+        max_length=36,
+        blank=True,
+    )
 
 
 class Signature(django_anysign.SignatureFactory(SignatureType)):
@@ -20,11 +24,6 @@ class Signature(django_anysign.SignatureFactory(SignatureType)):
         max_length=100,
         blank=True,
         default=u'',
-    )
-    docusign_template_id = models.CharField(
-        _('DocuSign template id'),
-        max_length=36,
-        blank=True,
     )
     status = models.CharField(
         _('status'),
@@ -84,11 +83,6 @@ class Signer(django_anysign.SignerFactory(Signature)):
     )
     status_details = models.CharField(
         _('status details'),
-        max_length=250,
-        blank=True,
-    )
-    docusign_role_name = models.CharField(
-        _('DocuSign role name'),
         max_length=250,
         blank=True,
     )

@@ -46,14 +46,6 @@ class CreateSignatureForm(forms.Form):
     )
 
 
-class SignerTemplateForm(SignerForm):
-    """Signer creation form for template mode."""
-    role_name = forms.CharField(
-        label=_('role name'),
-        max_length=100,
-    )
-
-
 class CreateSignatureTemplateForm(forms.Form):
     """Signature from template creation form."""
     template_id = forms.CharField(
@@ -66,7 +58,7 @@ class CreateSignatureTemplateForm(forms.Form):
         help_text=_("Title for the document."),
     )
     signers = FormSetField(
-        formset_factory(SignerTemplateForm, extra=2),
+        formset_factory(SignerForm, extra=2),
         label=_('signers'),
     )
     callback_url = forms.URLField(

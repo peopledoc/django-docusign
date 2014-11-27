@@ -54,12 +54,17 @@ class DocuSignBackend(django_anysign.SignatureBackend):
         Default implementation reads name, email and role name from database.
 
         """
+        # Get docusign template definition, to retrieve role names
+        template_definition = self.docusign_client.get_template(
+            signature.signature_type.docusign_template_id)
+        template_roles = template_definition['recipients']['signers']
         roles = []
+        # Build roles
         for signer in signature.signers.all().order_by('signing_order'):
             role = pydocusign.Role(
                 email=signer.email,
                 name=signer.full_name,
-                roleName=signer.docusign_role_name,
+                roleName=template_roles[signer.signing_order - 1]['roleName'],
                 clientUserId=signer.pk,
             )
             roles.append(role)
@@ -145,7 +150,7 @@ class DocuSignBackend(django_anysign.SignatureBackend):
             emailBlurb=blurb,
             eventNotification=event_notification,
             status=pydocusign.Envelope.STATUS_SENT,
-            templateId=signature.docusign_template_id,
+            templateId=signature.signature_type.docusign_template_id,
             templateRoles=roles,
         )
         envelope.envelopeId = self.docusign_client \
@@ -159,7 +164,7 @@ class DocuSignBackend(django_anysign.SignatureBackend):
         This method calls ``save()`` on ``signature``.
 
         """
-        if signature.docusign_template_id:
+        if signature.signature_type.docusign_template_id:
             envelope = self.create_signature_from_template(
                 signature, callback_url, subject, blurb)
         else:
