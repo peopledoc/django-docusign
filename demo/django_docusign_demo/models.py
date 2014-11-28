@@ -5,7 +5,11 @@ import django_anysign
 
 
 class SignatureType(django_anysign.SignatureType):
-    pass
+    docusign_template_id = models.CharField(
+        _('DocuSign template id'),
+        max_length=36,
+        blank=True,
+    )
 
 
 class Signature(django_anysign.SignatureFactory(SignatureType)):

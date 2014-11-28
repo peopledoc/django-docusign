@@ -15,6 +15,9 @@
       <li>
         <a href="{% url 'create_signature' %}">{% trans "Create signature" %}</a>
       </li>
+      <li>
+        <a href="{% url 'create_signature_template' %}">{% trans "Create signature from template" %}</a>
+      </li>
     </ul>
   {% endif %}
   {% if latest_signatures %}
@@ -25,7 +28,11 @@
           <dt>{% trans "pk" %}</dt>
           <dd>{{ signature.pk }}<dd>
           <dt>{% trans "document" %}</dt>
-          <dd>{{ signature.document.name }}<dd>
+          <dd>
+            {% if signature.document %}
+              <a href="{{ signature.document.url }}">{{ signature.document.name }}</a>
+            {% endif %}
+          <dd>
           <dt>{% trans "signers" %}</dt>
           <dd>
             <ul>

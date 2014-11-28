@@ -48,6 +48,28 @@ class DocuSignBackend(django_anysign.SignatureBackend):
             signers.append(signer)
         return signers
 
+    def get_docusign_roles(self, signature):
+        """Return list of pydocusign's Role for Signature instance.
+
+        Default implementation reads name, email and role name from database.
+
+        """
+        # Get docusign template definition, to retrieve role names
+        template_definition = self.docusign_client.get_template(
+            signature.signature_type.docusign_template_id)
+        template_roles = template_definition['recipients']['signers']
+        roles = []
+        # Build roles
+        for signer in signature.signers.all().order_by('signing_order'):
+            role = pydocusign.Role(
+                email=signer.email,
+                name=signer.full_name,
+                roleName=template_roles[signer.signing_order - 1]['roleName'],
+                clientUserId=signer.pk,
+            )
+            roles.append(role)
+        return roles
+
     def get_docusign_documents(self, signature):
         """Generate list of documents for ``signature`` model instance.
 
@@ -68,15 +90,15 @@ class DocuSignBackend(django_anysign.SignatureBackend):
                                .get_envelope_document(envelope_id, document_id)
                 yield document
 
-    def create_signature(self, signature, callback_url=None,
-                         subject=u'', blurb=u''):
-        """Register ``signature`` in DocuSign service, return updated object.
-
-        This method calls ``save()`` on ``signature``.
+    def create_signature_from_document(self, signature, callback_url=None,
+                                       subject=u'', blurb=u''):
+        """Register ``signature`` in DocuSign service, for a signature from
+        document.
 
         """
         # Prepare signers.
         signers = self.get_docusign_signers(signature)
+
         # Prepare documents.
         documents = []
         i = 1
@@ -106,6 +128,48 @@ class DocuSignBackend(django_anysign.SignatureBackend):
         )
         envelope.envelopeId = self.docusign_client \
                                   .create_envelope_from_document(envelope)
+        return envelope
+
+    def create_signature_from_template(self, signature, callback_url=None,
+                                       subject=u'', blurb=u''):
+        """Register ``signature`` in DocuSign service, for a signature from
+        document.
+
+        """
+        # Prepare roles.
+        roles = self.get_docusign_roles(signature)
+        # Prepare event notifications (callbacks).
+        if callback_url is None:
+            callback_url = self.get_signature_callback_url(signature)
+        event_notification = pydocusign.EventNotification(
+            url=callback_url,
+        )
+        # Create envelope with embedded signing.
+        envelope = pydocusign.Envelope(
+            emailSubject=subject,
+            emailBlurb=blurb,
+            eventNotification=event_notification,
+            status=pydocusign.Envelope.STATUS_SENT,
+            templateId=signature.signature_type.docusign_template_id,
+            templateRoles=roles,
+        )
+        envelope.envelopeId = self.docusign_client \
+                                  .create_envelope_from_template(envelope)
+        return envelope
+
+    def create_signature(self, signature, callback_url=None,
+                         subject=u'', blurb=u''):
+        """Register ``signature`` in DocuSign service, return updated object.
+
+        This method calls ``save()`` on ``signature``.
+
+        """
+        if signature.signature_type.docusign_template_id:
+            envelope = self.create_signature_from_template(
+                signature, callback_url, subject, blurb)
+        else:
+            envelope = self.create_signature_from_document(
+                signature, callback_url, subject, blurb)
         # Update signature instance with backend's ID.
         signature.signature_backend_id = envelope.envelopeId
         signature.save()

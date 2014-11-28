@@ -8,7 +8,11 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.8 (unreleased)
 ----------------
 
-- Nothing changed yet.
+Introducing DocuSign templates.
+
+- Feature #28 - Introduced support for DocuSign templates to create envelopes.
+  To run the tests, you'll need a new ``PYDOCUSIGN_TEST_TEMPLATE_ID``
+  environment variable: DocuSign's UUID of a template which has 2 roles.
 
 
 0.7 (2014-10-22)
