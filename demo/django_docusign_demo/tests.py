@@ -249,6 +249,16 @@ class SignatureFunctionalTestCase(django.test.TestCase):
         self.assertEqual(signature.signers.get(signing_order=2).status,
                          'declined')
 
+        # decline but do not give a reason
+        del data['RecipientStatuses'][1]['DeclineReason']
+        self.send_signature_callback(data)
+        signature = models.Signature.objects.get(pk=signature.pk)
+        self.assertEqual(signature.status, 'declined')
+        self.assertEqual(signature.signers.get(signing_order=1).status,
+                         'completed')
+        self.assertEqual(signature.signers.get(signing_order=2).status,
+                         'declined')
+
 
 class SignatureTemplateFunctionalTestCase(SignatureFunctionalTestCase):
     """Functional test suite for signature workflow."""
