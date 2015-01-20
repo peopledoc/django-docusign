@@ -248,8 +248,8 @@ class SignatureFunctionalTestCase(django.test.TestCase):
                          'completed')
         self.assertEqual(signature.signers.get(signing_order=2).status,
                          'declined')
-
-        # decline but do not give a reason
+        # On DocuSign, decline reason is optional. So make sure we can handle
+        # empty "decline reason" as well.
         del data['RecipientStatuses'][1]['DeclineReason']
         self.send_signature_callback(data)
         signature = models.Signature.objects.get(pk=signature.pk)
