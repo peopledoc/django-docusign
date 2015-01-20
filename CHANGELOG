@@ -8,7 +8,10 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.9 (unreleased)
 ----------------
 
-- Nothing changed yet.
+Bugfix release.
+
+- Bug #30 - Handle DocuSign callbacks that have no "decline reason" attribute
+  (was raising errors in such a situation).
 
 
 0.8 (2014-11-28)

@@ -238,7 +238,6 @@ class SignatureFunctionalTestCase(django.test.TestCase):
         data['RecipientStatuses'][1]['Status'] = "Declined"
         data['RecipientStatuses'][1]['Declined'] = "2014-10-06" \
                                                    "T01:10:05.000012"
-        data['RecipientStatuses'][1]['DeclineReason'] = "Do not sign a test!"
         data['Status'] = "Declined"
         data['Declined'] = "2014-10-06T01:10:05.000012"
         self.send_signature_callback(data)
@@ -248,6 +247,15 @@ class SignatureFunctionalTestCase(django.test.TestCase):
                          'completed')
         self.assertEqual(signature.signers.get(signing_order=2).status,
                          'declined')
+        self.assertEqual(signature.signers.get(signing_order=2).status_details,
+                         u'')
+        # Make sure we handle optional "decline reason" as well.
+        data['RecipientStatuses'][1]['DeclineReason'] = "Do not sign a test!"
+        self.send_signature_callback(data)
+        signature = models.Signature.objects.get(pk=signature.pk)
+        self.assertEqual(signature.status, 'declined')
+        self.assertEqual(signature.signers.get(signing_order=2).status_details,
+                         u'Do not sign a test!')
 
 
 class SignatureTemplateFunctionalTestCase(SignatureFunctionalTestCase):
