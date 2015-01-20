@@ -229,7 +229,7 @@ class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
             signer_id,
             status='declined',
             status_datetime=recipient['Declined'],
-            message=recipient['DeclineReason'],
+            message=recipient.get('DeclineReason') or "",
         )
 
     def signer_authenticationfailed(self, signer_id):
