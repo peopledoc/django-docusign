@@ -1,0 +1,70 @@
+#########
+Configure
+#########
+
+Here is the list of settings used by `django-anysign`.
+
+
+**************
+INSTALLED_APPS
+**************
+
+There is no need to register `django-docusign` application in your Django's
+``INSTALLED_APPS`` setting.
+
+
+*******
+ANYSIGN
+*******
+
+Since `django-docusign` depends on `django-anysign`_, configure
+`settings.ANYSIGN`_.
+
+Example from the :doc:`/demo`:
+
+.. literalinclude:: /../demo/django_docusign_demo/settings.py
+   :language: python
+   :start-after: BEGIN settings.ANYSIGN
+   :end-before: END settings.ANYSIGN
+
+
+********
+DOCUSIGN
+********
+
+``settings.DOCUSIGN`` is a dictionary that contains all specific configuration
+for `django-docusign`.
+
+Example from the :doc:`/demo`:
+
+.. literalinclude:: /../demo/django_docusign_demo/settings.py
+   :language: python
+   :start-after: BEGIN settings.DOCUSIGN
+   :end-before: END settings.DOCUSIGN
+
+client_factory
+==============
+
+:class:`~django_docusign.backend.DocuSignBackend` uses this path to import a
+Python callable and instanciate a client for `DocuSign` API.
+
+If not defined, :class:`~django_docusign.backend.DocuSignBackend` fallbacks to
+:class:`pydocusign.DocuSignClient`.
+
+client_kwargs
+=============
+
+:class:`~django_docusign.backend.DocuSignBackend` uses this dictionary as
+default keyword arguments to create `DocuSign` client.
+
+See :class:`~pydocusign.client.DocuSignClient` documentation for options
+supported by the default factory.
+
+
+.. rubric:: Notes & references
+
+.. target-notes::
+
+.. _`django-anysign`: https://pypi.python.org/pypi/django-anysign
+.. _`settings.ANYSIGN`:
+   https://django-anysign.readthedocs.org/en/latest/settings.html

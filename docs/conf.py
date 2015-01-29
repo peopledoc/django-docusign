@@ -189,6 +189,12 @@ intersphinx_mapping = {
     'django': (
         'https://docs.djangoproject.com/en/1.6/',
         'https://docs.djangoproject.com/en/1.6/_objects/'),
+    'pydocusign': (
+        'https://pydocusign.readthedocs.org/en/latest/',
+        None),
+    'djangoanysign': (
+        'https://django-anysign.readthedocs.org/en/latest/',
+        None),
 }
 
 # -- Options for LaTeX output --------------------------------------------------

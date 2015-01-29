@@ -10,8 +10,10 @@ Contents
    :titlesonly:
 
    install
+   settings
+   demo
    about/index
-   contributing.txt
+   contributing
 
 
 ******************

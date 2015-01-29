@@ -11,7 +11,6 @@ Demo project
 
 * demo can be used as a sandbox in order to try or develop the software.
 
-
 Feel free to use the demo project as a sandbox. See :doc:`/contributing` for
 details about development environment setup.
 

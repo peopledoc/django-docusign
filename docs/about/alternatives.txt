@@ -12,7 +12,7 @@ DocuSign's helper libraries
 ***************************
 
 There are other libraries related to `DocuSign`_ service. Check
-https://www.docusign.com/developer-center/quick-start/api-explorer/helper-library
+https://www.docusign.com/developer-center/helper-libraries
 
 
 **********
