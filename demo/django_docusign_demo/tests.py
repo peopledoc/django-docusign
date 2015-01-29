@@ -7,11 +7,14 @@ try:
 except ImportError:  # Python 2 fallback.
     import mock
 
+from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
 import django.test
+from django.test.utils import override_settings
 
 import pydocusign
 import pydocusign.test
+import django_docusign
 
 from django_docusign_demo import models, views
 
@@ -283,3 +286,49 @@ class SignatureTemplateFunctionalTestCase(SignatureFunctionalTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('home'))
         return models.Signature.objects.order_by('-pk').first()
+
+
+def noop(*args, **kwargs):
+    """Noop client factory."""
+    return 'noop'
+
+
+class DocuSignBackendTestCase(unittest.TestCase):
+    """Tests around :class:`~django_docusign.backend.DocuSignBackend`."""
+    def test_client_factory_valid(self):
+        """DOCUSIGN['CLIENT_FACTORY'] is used as client class."""
+        overrides = {
+            'DOCUSIGN': {'CLIENT_FACTORY': 'django_docusign_demo.tests.noop'},
+        }
+        with override_settings(**overrides):
+            backend = django_docusign.DocuSignBackend()
+            self.assertEqual(backend.docusign_client, 'noop')
+
+    def test_client_factory_invalid(self):
+        """Wrong DOCUSIGN['CLIENT_FACTORY'] leads to ImproperlyConfigured."""
+        overrides = {
+            'DOCUSIGN': {'CLIENT_FACTORY': 'django_docusign_demo.wrong'},
+        }
+        with override_settings(**overrides):
+            with self.assertRaises(ImproperlyConfigured):
+                django_docusign.DocuSignBackend()
+
+    def test_client_defaults(self):
+        """DocuSignBackend.get_client_factory() uses pydocusign by default."""
+        overrides = {
+            'DOCUSIGN': {},
+        }
+        with override_settings(**overrides):
+            with mock.patch('pydocusign.DocuSignClient') as client_mock:
+                django_docusign.DocuSignBackend()
+        client_mock.assert_called_once_with()
+
+    def test_client_kwargs_settings(self):
+        """DocuSignBackend uses settings.DOCUSIGN['CLIENT_KWARGS']."""
+        overrides = {
+            'DOCUSIGN': {'CLIENT_KWARGS': {'foo': 'bar'}},
+        }
+        with override_settings(**overrides):
+            with mock.patch('pydocusign.DocuSignClient') as client_mock:
+                django_docusign.DocuSignBackend()
+        client_mock.assert_called_once_with(foo='bar')

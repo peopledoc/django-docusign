@@ -8,7 +8,11 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.10 (unreleased)
 -----------------
 
-- Nothing changed yet.
+Features around settings.
+
+- Feature #34 - ``DocuSignBackend`` uses ``settings.DOCUSIGN`` to instanciate
+  `DocuSign` client. ``settings.DOCUSIGN`` is a dictionary with
+  ``CLIENT_FACTORY`` (Python import string) and ``CLIENT_KWARGS`` (dictionary).
 
 
 0.9 (2015-01-20)
