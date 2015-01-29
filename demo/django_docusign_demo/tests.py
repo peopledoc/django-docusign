@@ -296,18 +296,18 @@ def noop(*args, **kwargs):
 class DocuSignBackendTestCase(unittest.TestCase):
     """Tests around :class:`~django_docusign.backend.DocuSignBackend`."""
     def test_client_factory_valid(self):
-        """DOCUSIGN['client_factory'] is used as client class."""
+        """DOCUSIGN['CLIENT_FACTORY'] is used as client class."""
         overrides = {
-            'DOCUSIGN': {'client_factory': 'django_docusign_demo.tests.noop'},
+            'DOCUSIGN': {'CLIENT_FACTORY': 'django_docusign_demo.tests.noop'},
         }
         with override_settings(**overrides):
             backend = django_docusign.DocuSignBackend()
             self.assertEqual(backend.docusign_client, 'noop')
 
     def test_client_factory_invalid(self):
-        """Wrong DOCUSIGN['client_factory'] leads to ImproperlyConfigured."""
+        """Wrong DOCUSIGN['CLIENT_FACTORY'] leads to ImproperlyConfigured."""
         overrides = {
-            'DOCUSIGN': {'client_factory': 'django_docusign_demo.wrong'},
+            'DOCUSIGN': {'CLIENT_FACTORY': 'django_docusign_demo.wrong'},
         }
         with override_settings(**overrides):
             with self.assertRaises(ImproperlyConfigured):
@@ -324,9 +324,9 @@ class DocuSignBackendTestCase(unittest.TestCase):
         client_mock.assert_called_once_with()
 
     def test_client_kwargs_settings(self):
-        """DocuSignBackend uses settings.DOCUSIGN['client_kwargs']."""
+        """DocuSignBackend uses settings.DOCUSIGN['CLIENT_KWARGS']."""
         overrides = {
-            'DOCUSIGN': {'client_kwargs': {'foo': 'bar'}},
+            'DOCUSIGN': {'CLIENT_KWARGS': {'foo': 'bar'}},
         }
         with override_settings(**overrides):
             with mock.patch('pydocusign.DocuSignClient') as client_mock:

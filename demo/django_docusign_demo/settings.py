@@ -70,7 +70,7 @@ ANYSIGN = {
 
 # BEGIN settings.DOCUSIGN.
 DOCUSIGN = {
-    'client_kwargs': {
+    'CLIENT_KWARGS': {
         'root_url': 'https://demo.docusign.net/restapi/v2',
         'timeout': 10,
     },

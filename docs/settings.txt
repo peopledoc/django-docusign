@@ -42,7 +42,7 @@ Example from the :doc:`/demo`:
    :start-after: BEGIN settings.DOCUSIGN
    :end-before: END settings.DOCUSIGN
 
-client_factory
+CLIENT_FACTORY
 ==============
 
 :class:`~django_docusign.backend.DocuSignBackend` uses this path to import a
@@ -51,7 +51,7 @@ Python callable and instanciate a client for `DocuSign` API.
 If not defined, :class:`~django_docusign.backend.DocuSignBackend` fallbacks to
 :class:`pydocusign.DocuSignClient`.
 
-client_kwargs
+CLIENT_KWARGS
 =============
 
 :class:`~django_docusign.backend.DocuSignBackend` uses this dictionary as

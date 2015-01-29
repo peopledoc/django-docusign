@@ -30,12 +30,12 @@ class DocuSignBackend(django_anysign.SignatureBackend):
 
         Default implementation returns the first valid value in:
 
-        1. ``settings.DOCUSIGN['client_factory']``
+        1. ``settings.DOCUSIGN['CLIENT_FACTORY']``
         2. :class:`pydocusign.DocuSignClient`.
 
         """
         try:
-            factory = settings.DOCUSIGN['client_factory']
+            factory = settings.DOCUSIGN['CLIENT_FACTORY']
         except (AttributeError, KeyError):
             return pydocusign.DocuSignClient
         if factory:
@@ -43,7 +43,7 @@ class DocuSignBackend(django_anysign.SignatureBackend):
                 return import_member(factory)
             except (AttributeError, ImportError) as exception:
                 raise ImproperlyConfigured(
-                    "Failed to import settings.DOCUSIGN['client_factory'] "
+                    "Failed to import settings.DOCUSIGN['CLIENT_FACTORY'] "
                     "{factory}. Exception was {exception}".format(
                         factory=factory, exception=exception
                     ))
@@ -54,12 +54,12 @@ class DocuSignBackend(django_anysign.SignatureBackend):
 
         Uses, in order (the latter override the former):
 
-        1. ``settings.DOCUSIGN['client_kwargs']``
+        1. ``settings.DOCUSIGN['CLIENT_KWARGS']``
         2. ``kwargs``
 
         """
         try:
-            keyword_arguments = settings.DOCUSIGN['client_kwargs']
+            keyword_arguments = settings.DOCUSIGN['CLIENT_KWARGS']
         except (AttributeError, KeyError):
             keyword_arguments = {}
         keyword_arguments.update(kwargs)
