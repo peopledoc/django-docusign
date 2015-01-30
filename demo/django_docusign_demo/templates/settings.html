@@ -5,11 +5,24 @@
 {% block title %}{% trans "Configure django-docusign demo" %}{% endblock %}
 
 {% block content %}
-  <p>{% trans "The following settings will be stored in the session." %}</p>
   {{ form.non_field_errors }}
   <form method="POST" action=".">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Save settings</button>
+    <button type="submit">Save settings in session</button>
   </form>
+
+  <p>Here are defaults (uses DOCUSIGN_* environment variables):</p>
+  <dl>
+    <dd>Root URL</dd>
+    <dt>{{ default_backend.docusign_client.root_url|default:"Not set" }}</dt>
+    <dd>Username</dd>
+    <dt>{{ default_backend.docusign_client.username|default:"Not set" }}</dt>
+    <dd>Password</dd>
+    <dt>{% if default_backend.docusign_client.password %}*******{% else %}Not set{% endif %}</dt>
+    <dd>Integrator key</dd>
+    <dt>{% if default_backend.docusign_client.integrator_key %}*******{% else %}Not set{% endif %}</dt>
+    <dd>Timeout</dd>
+    <dt>{{ default_backend.docusign_client.timeout|default:"Not set" }}</dt>
+  </dl>
 {% endblock %}

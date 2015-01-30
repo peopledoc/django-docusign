@@ -11,19 +11,29 @@ class SettingsForm(forms.Form):
     """DocuSign API credentials."""
     root_url = forms.URLField(
         label=_('API root URL'),
+        required=False,
         initial=_('https://demo.docusign.net/restapi/v2'),
     )
     username = forms.CharField(
         label=_('username'),
+        required=False,
         max_length=50,
     )
     password = forms.CharField(
         label=_('password'),
+        required=False,
         max_length=50,
     )
     integrator_key = forms.CharField(
         label=_('integrator key'),
+        required=False,
         max_length=50,
+    )
+    timeout = forms.FloatField(
+        label=_('timeout'),
+        required=False,
+        min_value=0.001,
+        max_value=30,
     )
 
 

@@ -15,21 +15,18 @@ from django_docusign_demo import forms
 from django_docusign_demo import models
 
 
-def docusign_setting(request, name):
-    """Return setting by ``name`` from request.session or environ."""
-    environ_name = 'PYDOCUSIGN_TEST_{0}'.format(name.upper())
-    return request.session.get(name, os.environ.get(environ_name))
-
-
 def docusign_settings(request):
-    """Return dictionary of credentials for DocuSign, from session or environ.
+    """Return dictionary of credentials for DocuSign from session or environ.
 
     Values are read from session, and fallback to environ.
 
     """
     data = {}
-    for key in 'root_url', 'username', 'password', 'integrator_key':
-        data[key] = docusign_setting(request, key)
+    for key in 'root_url', 'username', 'password', 'integrator_key', 'timeout':
+        try:
+            data[key] = request.session[key]
+        except KeyError:
+            pass
     return data
 
 
@@ -54,7 +51,8 @@ class SettingsView(FormView):
         """Save configuration in session."""
         data = form.cleaned_data
         for (key, value) in data.items():
-            self.request.session[key] = value
+            if value:
+                self.request.session[key] = value
         return super(SettingsView, self).form_valid(form)
 
     def get_success_url(self):
@@ -62,6 +60,11 @@ class SettingsView(FormView):
 
     def get_initial(self):
         return docusign_settings(self.request)
+
+    def get_context_data(self, **kwargs):
+        data = super(SettingsView, self).get_context_data(**kwargs)
+        data['default_backend'] = django_docusign.DocuSignBackend()
+        return data
 
 
 class CreateSignatureView(FormView):
@@ -130,7 +133,7 @@ class CreateSignatureTemplateView(CreateSignatureView):
     def get_initial(self):
         """template_id initial value."""
         initial = self.initial.copy()
-        initial['template_id'] = docusign_setting(self.request, 'template_id')
+        initial['template_id'] = os.environ.get('DOCUSIGN_TEST_TEMPLATE_ID')
         return initial
 
     def form_valid(self, form):
