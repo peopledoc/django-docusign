@@ -10,15 +10,10 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 Features around settings.
 
-- Feature #34 - ``DocuSignBackend`` uses ``settings.DOCUSIGN`` to instanciate
-  `DocuSign` client. ``settings.DOCUSIGN`` is a dictionary with
-  ``CLIENT_FACTORY`` (Python import string) and ``CLIENT_KWARGS`` (dictionary).
-
-
-0.9 (2015-01-20)
-----------------
-
-Bugfix release.
+- Feature #34 - ``DocuSignBackend`` uses ``settings.DOCUSIGN_*`` to instanciate
+  `DocuSign` client. Available settings are ``DOCUSIGN_ROOT_URL``,
+  ``DOCUSIGN_USERNAME``, ``DOCUSIGN_PASSWORD``, ``DOCUSIGN_INTEGRATOR_KEY``,
+  ``DOCUSIGN_ACCOUNT_ID``, ``DOCUSIGN_APP_TOKEN``, ``DOCUSIGN_TIMEOUT``.
 
 - Bug #30 - Handle DocuSign callbacks that have no "decline reason" attribute
   (was raising errors in such a situation).

@@ -1,8 +1,6 @@
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
 
 import django_anysign
-from django_anysign.utils.importlib import import_member
 import pydocusign
 
 
@@ -11,8 +9,8 @@ class DocuSignBackend(django_anysign.SignatureBackend):
                  url_namespace='anysign', **kwargs):
         """Setup.
 
-        Uses :meth:`get_client_factory` and :meth:`get_client_kwargs`.
-        Additional ``kwargs`` are proxied to :meth:`get_client_kwargs`.
+        Additional ``kwargs`` are proxied to
+        :class:`pydocusign.DocuSignClient`.
 
         """
         super(DocuSignBackend, self).__init__(
@@ -20,50 +18,40 @@ class DocuSignBackend(django_anysign.SignatureBackend):
             code=code,
             url_namespace=url_namespace,
         )
-        client_factory = self.get_client_factory()
         client_kwargs = self.get_client_kwargs(**kwargs)
         #: Instance of :class:`~pydocusign.client.DocuSignClient`
-        self.docusign_client = client_factory(**client_kwargs)
-
-    def get_client_factory(self):
-        """Return callable to instanciate DocuSign client.
-
-        Default implementation returns the first valid value in:
-
-        1. ``settings.DOCUSIGN['CLIENT_FACTORY']``
-        2. :class:`pydocusign.DocuSignClient`.
-
-        """
-        try:
-            factory = settings.DOCUSIGN['CLIENT_FACTORY']
-        except (AttributeError, KeyError):
-            return pydocusign.DocuSignClient
-        if factory:
-            try:
-                return import_member(factory)
-            except (AttributeError, ImportError) as exception:
-                raise ImproperlyConfigured(
-                    "Failed to import settings.DOCUSIGN['CLIENT_FACTORY'] "
-                    "{factory}. Exception was {exception}".format(
-                        factory=factory, exception=exception
-                    ))
-        return pydocusign.DocuSignClient
+        self.docusign_client = pydocusign.DocuSignClient(**client_kwargs)
 
     def get_client_kwargs(self, **kwargs):
         """Return keyword arguments for use with DocuSign client factory.
 
         Uses, in order (the latter override the former):
 
-        1. ``settings.DOCUSIGN['CLIENT_KWARGS']``
+        1. ``settings.DOCUSIGN_*``
         2. ``kwargs``
 
+        .. note::
+
+           :class:`pydocusign.DocuSignClient` itself uses environment
+           variables ``DOCUSIGN_*`` if available.
+
         """
-        try:
-            keyword_arguments = settings.DOCUSIGN['CLIENT_KWARGS']
-        except (AttributeError, KeyError):
-            keyword_arguments = {}
-        keyword_arguments.update(kwargs)
-        return keyword_arguments
+        client_kwargs = {}
+        for key in ['root_url',
+                    'username',
+                    'password',
+                    'integrator_key',
+                    'account_id',
+                    'account_url',
+                    'app_token',
+                    'timeout']:
+            setting_name = 'DOCUSIGN_{0}'.format(key.upper())
+            try:
+                client_kwargs[key] = getattr(settings, setting_name)
+            except AttributeError:
+                pass
+        client_kwargs.update(kwargs)
+        return client_kwargs
 
     def get_docusign_tabs(self, signer):
         """Return list of pydocusign's tabs for Signer instance.

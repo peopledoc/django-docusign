@@ -7,7 +7,6 @@ try:
 except ImportError:  # Python 2 fallback.
     import mock
 
-from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
 import django.test
 from django.test.utils import override_settings
@@ -33,37 +32,6 @@ def temporary_env():
             os.environ[key] = value  # Restore.
 
 
-class DocuSignSettingTestCase(unittest.TestCase):
-    """Tests around ``docusign_setting()`` utility function."""
-    def test_session(self):
-        """django_docusign.views.docusign_setting reads conf in session."""
-        key = 'fake_key'
-        value = 'fake_value'
-        request = mock.Mock()
-        request.session = {key: value}  # In session.
-        self.assertTrue(key not in os.environ)  # Not in environ.
-        self.assertEqual(views.docusign_setting(request, key), value)
-
-    def test_environ(self):
-        """django_docusign.views.docusign_setting reads env vars."""
-        with temporary_env():
-            key = 'fake_key'
-            value = 'fake_value'
-            request = mock.Mock()
-            request.session = {}  # Not in session.
-            os.environ['PYDOCUSIGN_TEST_FAKE_KEY'] = value  # In environ.
-            self.assertEqual(views.docusign_setting(request, key), value)
-
-    def test_fallback(self):
-        """django_docusign.views.docusign_setting reads session before env."""
-        with temporary_env():
-            key = 'fake_key'
-            request = mock.Mock()
-            request.session = {key: 'session'}  # In session.
-            os.environ['PYDOCUSIGN_TEST_FAKE_KEY'] = 'environ'  # In environ.
-            self.assertEqual(views.docusign_setting(request, key), 'session')
-
-
 class DocuSignSettingsTestCase(unittest.TestCase):
     """Tests around ``docusign_settings()`` utility function."""
     def test_easy(self):
@@ -72,14 +40,14 @@ class DocuSignSettingsTestCase(unittest.TestCase):
             request = mock.Mock()
             request.session = {'root_url': 'URL',
                                'username': 'NAME',
-                               'password': 'PASS'}
-            os.environ['PYDOCUSIGN_TEST_PASS'] = 'DEFAULT_PASS'
-            os.environ['PYDOCUSIGN_TEST_INTEGRATOR_KEY'] = 'INTEGRATOR'
+                               'password': 'PASS',
+                               'not related to docusign': 'FOO'}
+            os.environ['DOCUSIGN_PASSWORD'] = 'DEFAULT_PASS'
+            os.environ['DOCUSIGN_INTEGRATOR_KEY'] = 'INTEGRATOR'
             self.assertEqual(views.docusign_settings(request),
                              {'root_url': 'URL',
                               'username': 'NAME',
-                              'password': 'PASS',
-                              'integrator_key': 'INTEGRATOR'})
+                              'password': 'PASS'})
 
 
 class SettingsViewTestCase(django.test.TestCase):
@@ -88,18 +56,15 @@ class SettingsViewTestCase(django.test.TestCase):
         """SettingsView actually stores settings in session."""
         with temporary_env():
             # 1. Make sure we are using settings from environment.
-            os.environ['PYDOCUSIGN_TEST_ROOT_URL'] = 'ENV'
+            os.environ['DOCUSIGN_ROOT_URL'] = 'ENV'
+            os.environ['DOCUSIGN_PASSWORD'] = 'ENV'
             home_url = reverse('home')
             response = self.client.get(home_url)
             request = response._request
             self.assertTrue('root_url' not in request.session)
-            self.assertEqual(views.docusign_settings(request)['root_url'],
-                             'ENV')
             # 2. POST settings, make sure we use settings in session.
             settings_url = reverse('settings')
-            api_url = 'http://example.com/root'
             data = {
-                'root_url': api_url,
                 'username': 'NAME',
                 'password': 'PASS',
                 'integrator_key': 'INTEGRATOR',
@@ -107,9 +72,10 @@ class SettingsViewTestCase(django.test.TestCase):
             response = self.client.post(settings_url, data, follow=True)
             self.assertRedirects(response, home_url)
             request = response._request
-            self.assertEqual(request.session['root_url'], api_url)
-            self.assertEqual(views.docusign_settings(request)['root_url'],
-                             api_url)
+            self.assertTrue('root_url' not in request.session)
+            self.assertEqual(request.session['username'], 'NAME')
+            self.assertEqual(request.session['password'], 'PASS')
+            self.assertEqual(request.session['integrator_key'], 'INTEGRATOR')
 
 
 class SignatureFunctionalTestCase(django.test.TestCase):
@@ -268,7 +234,7 @@ class SignatureTemplateFunctionalTestCase(SignatureFunctionalTestCase):
         url = reverse('create_signature_template')
         response = self.client.get(url)
         # get template_id from initial data
-        # must be defined in environment variable PYDOCUSIGN_TEST_TEMPLATE_ID
+        # must be defined in environment variable DOCUSIGN_TEST_TEMPLATE_ID
         template_id = response.context['form'].initial['template_id']
         data = {
             'signers-TOTAL_FORMS': u'2',
@@ -295,40 +261,59 @@ def noop(*args, **kwargs):
 
 class DocuSignBackendTestCase(unittest.TestCase):
     """Tests around :class:`~django_docusign.backend.DocuSignBackend`."""
-    def test_client_factory_valid(self):
-        """DOCUSIGN['CLIENT_FACTORY'] is used as client class."""
+    def test_setup_explicit(self):
+        """DocuSignBackend() proxies options to DocuSignClient()."""
+        explicit_options = {
+            'root_url': 'http://example.com',
+            'username': 'johndoe',
+            'password': 'secret',
+            'integrator_key': 'very-secret',
+            'account_id': 'some-uuid',
+            'app_token': 'some-token',
+            'timeout': 300.0,
+        }
+        backend = django_docusign.DocuSignBackend(**explicit_options)
+        for key, value in explicit_options.items():
+            self.assertEqual(getattr(backend.docusign_client, key), value)
+
+    def test_setup_settings(self):
+        """DocuSignBackend uses settings.DOCUSIGN_*."""
         overrides = {
-            'DOCUSIGN': {'CLIENT_FACTORY': 'django_docusign_demo.tests.noop'},
+            'DOCUSIGN_ROOT_URL': 'http://example.com',
+            'DOCUSIGN_USERNAME': 'pierre paul ou jacques',
+            'DOCUSIGN_PASSWORD': 'not-a-secret',
+            'DOCUSIGN_INTEGRATOR_KEY': 'not-an-integator-key',
+            'DOCUSIGN_ACCOUNT_ID': 'not-an-uuid',
+            'DOCUSIGN_APP_TOKEN': 'not-a-token',
+            'DOCUSIGN_TIMEOUT': 200.123,
         }
         with override_settings(**overrides):
             backend = django_docusign.DocuSignBackend()
-            self.assertEqual(backend.docusign_client, 'noop')
+        for key, value in overrides.items():
+            key = key.lower()[len('DOCUSIGN_'):]
+            self.assertEqual(getattr(backend.docusign_client, key), value)
 
-    def test_client_factory_invalid(self):
-        """Wrong DOCUSIGN['CLIENT_FACTORY'] leads to ImproperlyConfigured."""
+    def test_setup_priority(self):
+        """Explicit arguments have priority over settings."""
+        explicit_options = {
+            'root_url': 'http://example.com',
+            'username': 'johndoe',
+            'password': 'secret',
+            'integrator_key': 'very-secret',
+            'account_id': 'some-uuid',
+            'app_token': 'some-token',
+            'timeout': 300.0,
+        }
         overrides = {
-            'DOCUSIGN': {'CLIENT_FACTORY': 'django_docusign_demo.wrong'},
+            'DOCUSIGN_ROOT_URL': 'http://another.example.com',
+            'DOCUSIGN_USERNAME': 'pierre paul ou jacques',
+            'DOCUSIGN_PASSWORD': 'not-a-secret',
+            'DOCUSIGN_INTEGRATOR_KEY': 'not-an-integator-key',
+            'DOCUSIGN_ACCOUNT_ID': 'not-an-uuid',
+            'DOCUSIGN_APP_TOKEN': 'not-a-token',
+            'DOCUSIGN_TIMEOUT': 200.123,
         }
         with override_settings(**overrides):
-            with self.assertRaises(ImproperlyConfigured):
-                django_docusign.DocuSignBackend()
-
-    def test_client_defaults(self):
-        """DocuSignBackend.get_client_factory() uses pydocusign by default."""
-        overrides = {
-            'DOCUSIGN': {},
-        }
-        with override_settings(**overrides):
-            with mock.patch('pydocusign.DocuSignClient') as client_mock:
-                django_docusign.DocuSignBackend()
-        client_mock.assert_called_once_with()
-
-    def test_client_kwargs_settings(self):
-        """DocuSignBackend uses settings.DOCUSIGN['CLIENT_KWARGS']."""
-        overrides = {
-            'DOCUSIGN': {'CLIENT_KWARGS': {'foo': 'bar'}},
-        }
-        with override_settings(**overrides):
-            with mock.patch('pydocusign.DocuSignClient') as client_mock:
-                django_docusign.DocuSignBackend()
-        client_mock.assert_called_once_with(foo='bar')
+            backend = django_docusign.DocuSignBackend(**explicit_options)
+        for key, value in explicit_options.items():
+            self.assertEqual(getattr(backend.docusign_client, key), value)

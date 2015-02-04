@@ -69,12 +69,8 @@ ANYSIGN = {
 # END settings.ANYSIGN.
 
 # BEGIN settings.DOCUSIGN.
-DOCUSIGN = {
-    'CLIENT_KWARGS': {
-        'root_url': 'https://demo.docusign.net/restapi/v2',
-        'timeout': 10,
-    },
-}
+DOCUSIGN_ROOT_URL = 'https://demo.docusign.net/restapi/v2'
+DOCUSIGN_TIMEOUT = 10
 # END settings.DOCUSIGN.
 
 # Test/development settings.

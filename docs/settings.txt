@@ -28,12 +28,21 @@ Example from the :doc:`/demo`:
    :end-before: END settings.ANYSIGN
 
 
-********
-DOCUSIGN
-********
+**********
+DOCUSIGN_*
+**********
 
-``settings.DOCUSIGN`` is a dictionary that contains all specific configuration
-for `django-docusign`.
+Settings prefixed with `DOCUSIGN_` are used by
+:class:`~django_docusign.backend.DocuSignBackend` as default values to setup
+:class:`pydocusign.DocuSignClient`. Use them when you want to use some global
+configuration for your `Django`-powered project.
+
+.. note::
+
+   If you need to use custom options depending on your requests (as an example
+   if you use several `DocuSign` credentials depending on user accounts), then
+   you can pass explicit arguments to
+   :class:`~django_docusign.backend.DocuSignBackend`.
 
 Example from the :doc:`/demo`:
 
@@ -42,23 +51,15 @@ Example from the :doc:`/demo`:
    :start-after: BEGIN settings.DOCUSIGN
    :end-before: END settings.DOCUSIGN
 
-CLIENT_FACTORY
-==============
+Here are available settings:
 
-:class:`~django_docusign.backend.DocuSignBackend` uses this path to import a
-Python callable and instanciate a client for `DocuSign` API.
-
-If not defined, :class:`~django_docusign.backend.DocuSignBackend` fallbacks to
-:class:`pydocusign.DocuSignClient`.
-
-CLIENT_KWARGS
-=============
-
-:class:`~django_docusign.backend.DocuSignBackend` uses this dictionary as
-default keyword arguments to create `DocuSign` client.
-
-See :class:`~pydocusign.client.DocuSignClient` documentation for options
-supported by the default factory.
+* ``settings.DOCUSIGN_ROOT_URL``: root URL of DocuSign API.
+* ``settings.DOCUSIGN_USERNAME``: API username.
+* ``settings.DOCUSIGN_PASSWORD``: API password.
+* ``settings.DOCUSIGN_INTEGRATOR_KEY``: API integrator key.
+* ``settings.DOCUSIGN_ACCOUNT_ID``: API account ID.
+* ``settings.DOCUSIGN_APP_TOKEN``: API AppToken.
+* ``settings.DOCUSIGN_TIMEOUT``: Connection timeout.
 
 
 .. rubric:: Notes & references
