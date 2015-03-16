@@ -8,8 +8,13 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.11 (unreleased)
 -----------------
 
+Refactoring related to `pydocusign` version 0.13.
+
 - Refactoring #37 - Project repository moved to novafloss organization
   (was novapost).
+
+- Refactoring #38 - Upgraded to pydocusign 0.13. Refactored handling of
+  routingOrder and Envelope.post_recipient_view.
 
 
 0.10 (2015-02-04)

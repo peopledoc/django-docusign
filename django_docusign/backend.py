@@ -69,6 +69,7 @@ class DocuSignBackend(django_anysign.SignatureBackend):
 
         """
         signers = []
+        position = 1
         for signer in signature.signers.all().order_by('signing_order'):
             tabs = self.get_docusign_tabs(signer)
             signer = pydocusign.Signer(
@@ -76,9 +77,11 @@ class DocuSignBackend(django_anysign.SignatureBackend):
                 name=signer.full_name,
                 recipientId=signer.pk,
                 clientUserId=signer.pk,
+                routingOrder=position,
                 tabs=tabs,
             )
             signers.append(signer)
+            position += 1
         return signers
 
     def get_docusign_roles(self, signature):
@@ -209,32 +212,21 @@ class DocuSignBackend(django_anysign.SignatureBackend):
         # Return updated object.
         return signature
 
-    def post_recipient_view(self, signer, position=None,
-                            signer_return_url=None):
+    def post_recipient_view(self, signer, signer_return_url=None):
         # Prepare signers.
-        signers = [
-            pydocusign.Signer(
-                email=every_signer.email,
-                name=every_signer.full_name,
-                recipientId=every_signer.pk,
-                clientUserId=every_signer.pk,
-            ) for every_signer in signer.signature
-                                        .signers
-                                        .all()
-                                        .order_by('signing_order')
-        ]
+        docusign_signers = self.get_docusign_signers(signer.signature)
         # Create envelope with embedded signing.
         envelope = pydocusign.Envelope(
             envelopeId=signer.signature.signature_backend_id,
-            recipients=signers,
+            recipients=docusign_signers,
         )
-        if position is None:
-            position = signer.signing_order
+        docusign_signer = [ds for ds in docusign_signers
+                           if ds.clientUserId == signer.pk][0]
         if signer_return_url is None:
             signer_return_url = self.get_signer_return_url(signer)
         envelope.get_recipients(client=self.docusign_client)
         return envelope.post_recipient_view(
             client=self.docusign_client,
-            routingOrder=position,
+            recipient=docusign_signer,
             returnUrl=signer_return_url
         )
