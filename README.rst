@@ -27,10 +27,10 @@ Resources
 
 * Documentation: https://django-docusign.readthedocs.org
 * Python package: https://pypi.python.org/pypi/django-docusign/
-* Bugtracker: https://github.com/novapost/django-docusign/issues
+* Bugtracker: https://github.com/novafloss/django-docusign/issues
 * Changelog: https://django-docusign.readthedocs.org/en/latest/about/changelog.html
-* Roadmap: https://github.com/novapost/django-docusign/milestones
-* Code repository: https://github.com/novapost/django-docusign
+* Roadmap: https://github.com/novafloss/django-docusign/milestones
+* Code repository: https://github.com/novafloss/django-docusign
 * Continuous integration: https://travis-ci.org/novapost/django-docusign
 
 .. _`DocuSign`: https://www.docusign.com/

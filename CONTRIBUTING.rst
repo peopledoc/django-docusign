@@ -96,7 +96,7 @@ get the setup. Here is an example to run the tests:
 
 .. target-notes::
 
-.. _`django-docusign bugtracker`: https://github.com/novapost/django-docusign/issues
+.. _`django-docusign bugtracker`: https://github.com/novafloss/django-docusign/issues
 .. _`rebase`: http://git-scm.com/book/en/Git-Branching-Rebasing
 .. _`merge-based rebase`: http://tech.novapost.fr/psycho-rebasing-en.html
 .. _`pip`: https://pypi.python.org/pypi/pip/

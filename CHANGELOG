@@ -8,7 +8,8 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.11 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Refactoring #37 - Project repository moved to novafloss organization
+  (was novapost).
 
 
 0.10 (2015-02-04)
@@ -132,4 +133,4 @@ Initial release.
 
 .. target-notes::
 
-.. _`milestones`: https://github.com/novapost/django-docusign/milestones
+.. _`milestones`: https://github.com/novafloss/django-docusign/milestones
