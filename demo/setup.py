@@ -29,7 +29,6 @@ REQUIREMENTS = [
     'django-formsetfield',
     'django-nose',
     'setuptools',
-    'south',
 ]
 ENTRY_POINTS = {
     'console_scripts': [
