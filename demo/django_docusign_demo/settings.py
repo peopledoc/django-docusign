@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Django settings for django-docusign demo project."""
 import os
+from django.conf.global_settings import MIDDLEWARE_CLASSES
 
 
 # Configure some relative directories.
@@ -34,6 +35,11 @@ MEDIA_URL = '/media/'
 STATIC_ROOT = os.path.join(data_dir, 'static')
 STATIC_URL = '/static/'
 
+MIDDLEWARE_CLASSES += (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+)
 
 # Applications.
 INSTALLED_APPS = (
@@ -43,7 +49,6 @@ INSTALLED_APPS = (
     'django_anysign',
     # Third-parties.
     'formsetfield',
-    'south',
     # Standard Django applications.
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -83,10 +88,7 @@ NOSE_ARGS = [
     '--no-path-adjustment',
     '--nocapture',
     '--all-modules',
-    '--rednose',
 ]
-SOUTH_TESTS_MIGRATE = False
-
 
 LOGGING = {
     'version': 1,
