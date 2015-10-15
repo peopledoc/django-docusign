@@ -28,6 +28,7 @@ develop:
 
 #: demo - Install demo project.
 demo: develop
+	mkdir -p var
 	$(DEMO) syncdb --noinput
 	$(DEMO) migrate
 
