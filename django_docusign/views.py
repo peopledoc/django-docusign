@@ -1,17 +1,15 @@
-from django.views.generic.base import TemplateResponseMixin, ContextMixin, View
+from django.views.generic.base import ContextMixin, View
 
 import pydocusign
 from django_anysign import api as django_anysign
 
 
-class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
+class SignatureCallbackView(ContextMixin, View):
     """Handle DocuSign's event notification.
 
     This view can handle both recipient and envelope events.
 
     """
-    template_name = 'docusign/signature_callback.html'
-
     @property
     def docusign_parser(self):
         """Parser for DocuSign's request.
