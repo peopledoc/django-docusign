@@ -64,7 +64,7 @@ class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
             callback = getattr(self,
                                'signature_{status}'.format(
                                    status=signature_event['status'].lower()))
-        callback()
+            callback()
         # Trigger signer events.
         for signer_event in signer_events:
             callback = getattr(self,
