@@ -51,7 +51,8 @@ class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
             # If signature status is "sent" and all signers are "sent", then
             # trigger "sent" event for signature and all signers.
             if all([signer_event['status'] == 'sent'
-                    for signer_event in self.docusign_parser.recipient_events]):
+                    for signer_event
+                    in self.docusign_parser.recipient_events]):
                 signer_events = self.docusign_parser.recipient_events
             # Else, do not care about "sent" event for signature.
             else:
