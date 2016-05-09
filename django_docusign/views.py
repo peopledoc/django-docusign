@@ -50,7 +50,7 @@ class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
         if signature_event['status'] == pydocusign.Envelope.STATUS_SENT:
             # If signature status is "sent" and all signers are "sent", then
             # trigger "sent" event for signature and all signers.
-            if all([signer_event['status'] == 'sent'
+            if all([signer_event['status'] == pydocusign.Recipient.STATUS_SENT
                     for signer_event
                     in self.docusign_parser.recipient_events]):
                 signer_events = self.docusign_parser.recipient_events
