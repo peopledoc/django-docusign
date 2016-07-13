@@ -128,7 +128,8 @@ class DocuSignBackend(django_anysign.SignatureBackend):
                 yield document
 
     def create_signature_from_document(self, signature, callback_url=None,
-                                       subject=u'', blurb=u'', sobo_email=None):
+                                       subject=u'', blurb=u'', sobo_email=None,
+                                       **env_params):
         """Register ``signature`` in DocuSign service, for a signature from
         document.
 
@@ -163,13 +164,15 @@ class DocuSignBackend(django_anysign.SignatureBackend):
             documents=documents,
             recipients=signers,
             sobo_email=sobo_email,
+            **env_params
         )
         envelope.envelopeId = self.docusign_client \
                                   .create_envelope_from_document(envelope)
         return envelope
 
     def create_signature_from_template(self, signature, callback_url=None,
-                                       subject=u'', blurb=u'', sobo_email=None):
+                                       subject=u'', blurb=u'', sobo_email=None,
+                                       **env_params):
         """Register ``signature`` in DocuSign service, for a signature from
         document.
 
@@ -191,13 +194,15 @@ class DocuSignBackend(django_anysign.SignatureBackend):
             templateId=signature.signature_type.docusign_template_id,
             templateRoles=roles,
             sobo_email=sobo_email,
+            **env_params
         )
         envelope.envelopeId = self.docusign_client \
                                   .create_envelope_from_template(envelope)
         return envelope
 
     def create_signature(self, signature, callback_url=None,
-                         subject=u'', blurb=u'', sobo_email=None):
+                         subject=u'', blurb=u'', sobo_email=None,
+                         **env_params):
         """Register ``signature`` in DocuSign service, return updated object.
 
         This method calls ``save()`` on ``signature``.
@@ -205,10 +210,12 @@ class DocuSignBackend(django_anysign.SignatureBackend):
         """
         if signature.signature_type.docusign_template_id:
             envelope = self.create_signature_from_template(
-                signature, callback_url, subject, blurb, sobo_email)
+                signature, callback_url, subject, blurb, sobo_email,
+                **env_params)
         else:
             envelope = self.create_signature_from_document(
-                signature, callback_url, subject, blurb, sobo_email)
+                signature, callback_url, subject, blurb, sobo_email,
+                **env_params)
         # Update signature instance with backend's ID.
         signature.signature_backend_id = envelope.envelopeId
         signature.save()
