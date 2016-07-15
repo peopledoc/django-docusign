@@ -22,10 +22,10 @@ EMAIL = u'novafloss@people-doc.com'
 LICENSE = 'BSD'
 URL = 'https://django-docusign.readthedocs.org/'
 CLASSIFIERS = [
-    'Programming Language :: Python :: 2.7',
-    'Development Status :: 3 - Alpha',
-    'Framework :: Django',
+    'Development Status :: 5 - Production/Stable',
     'License :: OSI Approved :: BSD License',
+    'Programming Language :: Python :: 2.7',
+    'Framework :: Django',
 ]
 KEYWORDS = [
     'docusign',
