@@ -14,7 +14,7 @@ DESCRIPTION = ''
 README = open(os.path.join(here, 'README.rst')).read()
 VERSION = open(os.path.join(project_root, 'VERSION')).read().strip()
 AUTHOR = u'Benoît Bryon'
-EMAIL = u'benoit@marmelune.net'
+EMAIL = u'novafloss@people-doc.com'
 URL = ''
 CLASSIFIERS = ['Development Status :: 4 - Beta',
                'License :: OSI Approved :: BSD License',
