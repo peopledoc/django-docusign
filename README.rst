@@ -31,7 +31,7 @@ Resources
 * Changelog: https://django-docusign.readthedocs.org/en/latest/about/changelog.html
 * Roadmap: https://github.com/novafloss/django-docusign/milestones
 * Code repository: https://github.com/novafloss/django-docusign
-* Continuous integration: https://travis-ci.org/novapost/django-docusign
+* Continuous integration: https://travis-ci.org/novafloss/django-docusign
 
 .. _`DocuSign`: https://www.docusign.com/
 .. _`pydocusign`: https://pypi.python.org/pypi/pydocusign/

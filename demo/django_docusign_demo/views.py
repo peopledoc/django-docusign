@@ -207,15 +207,12 @@ class SignatureCallbackView(django_docusign.SignatureCallbackView):
         if status == 'completed' or not self.signature.document:
             document = self.signature_backend.get_docusign_documents(
                 self.signature).next()  # In our model, there is only one doc.
-            try:
-                # Replace old document by signed one.
-                filename = self.signature.document.name
-                if not filename:
-                    filename = "%s.pdf" % slugify(
-                        self.signature.document_title)
-                self.signature.document.delete(save=False)
-                self.signature.document.save(filename,
-                                             ContentFile(document.read()),
-                                             save=True)
-            finally:
-                document.close()
+            # Replace old document by signed one.
+            filename = self.signature.document.name
+            if not filename:
+                filename = "%s.pdf" % slugify(
+                    self.signature.document_title)
+            self.signature.document.delete(save=False)
+            self.signature.document.save(filename,
+                                         ContentFile(document.read()),
+                                         save=True)
