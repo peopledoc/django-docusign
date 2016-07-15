@@ -1,3 +1,5 @@
+|Build Status| |Documentation Status| |Pypi Status|
+
 ###############
 django-docusign
 ###############
@@ -35,3 +37,13 @@ Resources
 .. _`DocuSign`: https://www.docusign.com/
 .. _`pydocusign`: https://pypi.python.org/pypi/pydocusign/
 .. _`django-anysign`: https://pypi.python.org/pypi/django-anysign/
+
+
+.. |Build Status| image:: https://travis-ci.org/novafloss/django-docusign.svg?branch=master
+    :target: https://travis-ci.org/novafloss/django-docusign
+
+.. |Documentation Status| image:: https://readthedocs.org/projects/django-docusign/badge/
+    :target: http://django-docusign.readthedocs.io/en/latest/
+
+.. |Pypi Status| image:: https://img.shields.io/pypi/v/django-docusign.svg
+    :target: https://pypi.python.org/pypi/django-docusign

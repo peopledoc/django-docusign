@@ -60,6 +60,9 @@ exclude_patterns = ['_build']
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
+# Ignore some warnings
+suppress_warnings = ['image.nonlocal_uri']
+
 
 # -- Options for HTML output --------------------------------------------------
 
