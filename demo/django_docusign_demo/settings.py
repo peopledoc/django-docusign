@@ -125,9 +125,5 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
         },
-        'django_dummysign': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        },
     }
 }
