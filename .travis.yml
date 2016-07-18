@@ -4,10 +4,6 @@ env:
   - TOXENV=py27
   - TOXENV=flake8
   - TOXENV=readme
-  global:
-  - secure: k7RYnm0PEwvfcGRLPXnt2hqLDRqPWqfY/3SIAFoiLlepLHp7r+3kgyxd1JRyT0UJD8rKlnPvJzxfaLlaaSaQ5AdhZyYhkVV9pxOE+6cgb46mHPuFaa00kNWJOb0othVefyvzP/SrheETzDvRen9+6W1TwbSSa9x7s+ZgSJZSHzU=
-  - secure: iVeuG0S7un4rWxfGk9GXjklmzxeOKAccwQ4mrnVSjTB2Y9m6tQqui+ODXwT/Br3051I8zUeVCEJD8XPA5rd1Kq7TXwXrAXo/cQovXzPg6zDBf1nf12uEhamOtlZv8odEhhKZbGYF3eb4haqVvJbCuA8aVED3jYqND+QFqnRcYVs=
-  - secure: Za3XWHmzT/OCQWm6S6CKrxcfesNQay4H9euqkxMFC328xKDEmgNhb8JrxOiDwDPMymgcbDK4/Tm9kIMVjvHyJj5lDF393pIeUK73QLv+MBOZZIX56A+nt9RRbxGUfJnyFG517+9EB32MTjE6iIri5TGTpT2/CXwDF3TWyn7qgm4=
 install:
 - make develop
 script:

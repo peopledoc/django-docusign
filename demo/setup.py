@@ -14,14 +14,13 @@ DESCRIPTION = ''
 README = open(os.path.join(here, 'README.rst')).read()
 VERSION = open(os.path.join(project_root, 'VERSION')).read().strip()
 AUTHOR = u'Benoît Bryon'
-EMAIL = u'benoit@marmelune.net'
+EMAIL = u'novafloss@people-doc.com'
 URL = ''
-CLASSIFIERS = ['Development Status :: 4 - Beta',
-               'License :: OSI Approved :: BSD License',
-               'Programming Language :: Python :: 2.7',
-               'Programming Language :: Python :: 3.3',
-               'Programming Language :: Python :: 3.4',
-               'Framework :: Django']
+CLASSIFIERS = [
+    'Development Status :: 5 - Production/Stable',
+    'License :: OSI Approved :: BSD License',
+    'Programming Language :: Python :: 2.7',
+    'Framework :: Django']
 KEYWORDS = []
 PACKAGES = ['django_docusign_demo']
 REQUIREMENTS = [

@@ -18,14 +18,14 @@ DESCRIPTION = 'Django application for DocuSign signature SAAS platform.'
 README = open(os.path.join(here, 'README.rst')).read()
 VERSION = open(os.path.join(here, 'VERSION')).read().strip()
 AUTHOR = u'Benoît Bryon'
-EMAIL = 'benoit@marmelune.net'
+EMAIL = u'novafloss@people-doc.com'
 LICENSE = 'BSD'
-URL = 'https://django-docusign.readthedocs.org/'
+URL = 'https://{name}.readthedocs.io/'.format(name=NAME)
 CLASSIFIERS = [
-    'Programming Language :: Python :: 2.7',
-    'Development Status :: 3 - Alpha',
-    'Framework :: Django',
+    'Development Status :: 5 - Production/Stable',
     'License :: OSI Approved :: BSD License',
+    'Programming Language :: Python :: 2.7',
+    'Framework :: Django',
 ]
 KEYWORDS = [
     'docusign',
