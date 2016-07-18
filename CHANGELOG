@@ -8,7 +8,9 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 1.0 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Drop support of Django < 1.8
+- Add support of Django 1.8
+- Add support of Django 1.9
 
 
 0.12 (2015-09-10)
