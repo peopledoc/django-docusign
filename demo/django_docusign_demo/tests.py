@@ -13,7 +13,7 @@ from django.test.utils import override_settings
 
 import pydocusign
 import pydocusign.test
-import django_docusign
+from django_docusign import api as django_docusign
 
 from django_docusign_demo import models, views
 
@@ -119,14 +119,17 @@ class SignatureFunctionalTestCase(django.test.TestCase):
         url = reverse('anysign:signer',
                       args=[self.signature.signers.all()[0].pk])
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response.status_code, 302)
         self.assertTrue(
             response['Location'].startswith('https://demo.docusign.net'))
 
     def send_signature_callback(self, data):
         url = reverse('anysign:signature_callback')
         request_body = pydocusign.test.generate_notification_callback_body(
-            data=data)
+            data=data,
+            template_url='http://diecutter.io/github/'
+                         'novafloss/pydocusign/master/'
+                         'pydocusign/templates/callback.xml')
         response = self.client.post(
             url,
             content_type='text/xml',

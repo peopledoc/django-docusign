@@ -8,8 +8,8 @@ from django.views.generic.detail import SingleObjectMixin
 from django.utils.text import slugify
 from django.utils.timezone import now
 
-import django_anysign
-import django_docusign
+from django_anysign import api as django_anysign
+from django_docusign import api as django_docusign
 
 from django_docusign_demo import forms
 from django_docusign_demo import models
@@ -162,6 +162,7 @@ class CreateSignatureTemplateView(CreateSignatureView):
 class SignerView(SingleObjectMixin, RedirectView):
     """Embed DocuSign's recipient view."""
     model = models.Signer
+    permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
         """Return URL where signer is redirected once doc has been signed."""

@@ -3,7 +3,7 @@ from django import forms
 from django.forms.formsets import formset_factory
 from django.utils.translation import ugettext_lazy as _
 
-from django_docusign import SignerForm
+from django_docusign import api as django_docusign
 from formsetfield.fields import FormSetField
 
 
@@ -48,7 +48,7 @@ class CreateSignatureForm(forms.Form):
         help_text=_("Title for the document."),
     )
     signers = FormSetField(
-        formset_factory(SignerForm, extra=2),
+        formset_factory(django_docusign.SignerForm, extra=2),
         label=_('signers'),
     )
     callback_url = forms.URLField(
@@ -68,7 +68,7 @@ class CreateSignatureTemplateForm(forms.Form):
         help_text=_("Title for the document."),
     )
     signers = FormSetField(
-        formset_factory(SignerForm, extra=2),
+        formset_factory(django_docusign.SignerForm, extra=2),
         label=_('signers'),
     )
     callback_url = forms.URLField(

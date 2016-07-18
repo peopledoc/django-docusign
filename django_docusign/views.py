@@ -1,7 +1,7 @@
 from django.views.generic.base import TemplateResponseMixin, ContextMixin, View
 
-import django_anysign
 import pydocusign
+from django_anysign import api as django_anysign
 
 
 class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
