@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-import django_anysign
+from django_anysign import api as django_anysign
 
 
 class SignatureType(django_anysign.SignatureType):

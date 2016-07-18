@@ -8,7 +8,16 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 1.0 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Drop support of Django < 1.8
+  Explicitly mark Django 1.5, 1.6 and 1.7 as not supported
+  (tests fail with those versions) in packaging.
+
+- Add support of Django 1.8 and Django 1.9.
+
+- Breaking: `django_docusign.api` package is no longer imported in
+  `django_docusign` root package.
+  Instead of doing ``import django_docusign``, just do:
+  ``from django_docusign import api as django_docusign``.
 
 
 0.12 (2015-09-10)

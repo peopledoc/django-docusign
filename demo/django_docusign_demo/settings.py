@@ -108,7 +108,7 @@ LOGGING = {
             'class': 'logging.StreamHandler',
         },
         'null': {
-            'class': 'django.utils.log.NullHandler',
+            'class': 'logging.NullHandler',
         },
         'mail_admins': {
             'level': 'ERROR',

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import uuid
 
 from django.db import models, migrations
-import uuidfield.fields
 
 
 class Migration(migrations.Migration):
@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('signature_backend_id', models.CharField(default='', max_length=100, verbose_name='ID for signature backend', db_index=True, blank=True)),
-                ('anysign_internal_id', uuidfield.fields.UUIDField(verbose_name='ID in internal database', unique=True, max_length=32, editable=False, blank=True)),
+                ('anysign_internal_id', models.UUIDField(verbose_name='ID in internal database', default=uuid.uuid4)),
                 ('document', models.FileField(upload_to=b'signatures', null=True, verbose_name='document', blank=True)),
                 ('document_title', models.CharField(default='', max_length=100, verbose_name='title', blank=True)),
                 ('status', models.CharField(default=b'draft', max_length=50, verbose_name='status', db_index=True, choices=[(b'draft', 'draft'), (b'sent', 'sent'), (b'delivered', 'delivered'), (b'completed', 'completed'), (b'declined', 'declined')])),
@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('signing_order', models.PositiveSmallIntegerField(default=0, help_text='Position in the list of signers. Starts at 1.', verbose_name='signing order')),
                 ('signature_backend_id', models.CharField(default='', max_length=100, verbose_name='ID in signature backend', db_index=True, blank=True)),
-                ('anysign_internal_id', uuidfield.fields.UUIDField(verbose_name='ID in internal database', unique=True, max_length=32, editable=False, blank=True)),
+                ('anysign_internal_id', models.UUIDField(verbose_name='ID in internal database', default=uuid.uuid4)),
                 ('full_name', models.CharField(max_length=50, verbose_name='full name', db_index=True)),
                 ('email', models.EmailField(max_length=75, verbose_name='email', db_index=True)),
                 ('status', models.CharField(default=b'draft', max_length=50, verbose_name='status', db_index=True, choices=[(b'draft', 'draft'), (b'sent', 'sent'), (b'delivered', 'delivered'), (b'completed', 'completed'), (b'declined', 'declined')])),

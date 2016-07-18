@@ -1,7 +1,8 @@
 language: python
 env:
   matrix:
-  - TOXENV=py27
+  - TOXENV=py27-django18
+  - TOXENV=py27-django19
   - TOXENV=flake8
   - TOXENV=readme
 install:

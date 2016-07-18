@@ -1,7 +1,7 @@
 from django.conf import settings
 
-import django_anysign
 import pydocusign
+from django_anysign import api as django_anysign
 
 
 class DocuSignBackend(django_anysign.SignatureBackend):
