@@ -19,6 +19,8 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
   Instead of doing ``import django_docusign``, just do:
   ``from django_docusign import api as django_docusign``.
 
+- Add support of python3.
+
 
 0.12 (2015-09-10)
 -----------------

@@ -92,7 +92,8 @@ class SignatureFunctionalTestCase(django.test.TestCase):
 
     def create_signature(self):
         url = reverse('create_signature')
-        with open(os.path.join(fixtures_dir, 'test.pdf')) as document_file:
+        filepath = os.path.join(fixtures_dir, 'test.pdf')
+        with open(filepath, 'rb') as document_file:
             data = {
                 'signers-TOTAL_FORMS': u'2',
                 'signers-INITIAL_FORMS': u'0',
