@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.views.generic.base import ContextMixin, View
 
 import pydocusign
@@ -70,19 +71,7 @@ class SignatureCallbackView(ContextMixin, View):
                                'signer_{status}'.format(
                                    status=signer_event['status'].lower()))
             callback(signer_id=signer_event['recipient'])
-        # Render view.
-        context = self.get_context_data(**kwargs)
-        return self.render_to_response(context)
-
-    def get_context_data(self, **kwargs):
-        """Return context data.
-
-        Updates default data with ``signature`` and ``signer``.
-
-        """
-        data = super(SignatureCallbackView, self).get_context_data(**kwargs)
-        data['signature'] = self.signature
-        return data
+        return HttpResponse()
 
     @property
     def signature(self):
