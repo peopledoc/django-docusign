@@ -9,3 +9,6 @@
 # Virtualenv files (created by tox).
 /build/
 /dist/
+
+# Demo files.
+/var/
