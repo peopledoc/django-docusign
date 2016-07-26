@@ -5,11 +5,6 @@ env:
   - TOXENV=py27-django19
   - TOXENV=flake8
   - TOXENV=readme
-  global:
-  - secure: O4Yk9USxNer1T6fthNYVQ37U2YgfI4jNG3fVELXyokX/T/qTqtuwi+sUh+KXidN+r03+mmrCEN2C9/tUwZqx3kTXNtthiwUltQZ/jpi++Yo2T7A1knvBVEpnvOofabkvq9OvNyhJtrwHiyZ7DHf+JVadHztm65ggBT0CkoEh0TI=
-  - secure: gmIjf7SY7HOfDH5O6QQsc0hpffcZvICjLypi9n8XRs+7SnQ8ck+6j/p8kOGFk6AQP3Mm0r+y1NxsrU+g7obi3F/mmNYriTNnhqJQiMVlRdozyCMopJ5vpVv9WWff8VoYqSkGsbyDAYv62LHcXNyaPtCF7i4Jybj+FH7RbMFHcbQ=
-  - secure: Zpmx7SXxIl0qYjrT6jJH6Djmns7YJy1aMVCPWEOkKxFHqe8jLlun+kqeze1CxGyq+s3tB5QONpnByF+dcP4dp2BWtJhM+XymfdfLgA5o1cSv52DgmOqg/ofJl5z+jK3nLUkvsHBqNu6msYwF5rjNrPHt87wxXpB6zG/nv5WVcQ0=
-  - secure: LjMZRuXew8Srxb5CauMvQkBeDmDQjLPOQ1e7wNN2pJ1cjhpCTxid0YSwU1okrMQ/QcBdHHOuYwNnxelxMjQUE5HCHwbMANmPW153PSrEirIoH7TAmOyVjbJTafSl6hFg2lhYdwHqdcJ/88m3YMWKdL0DrBTfGkOPK8fXowFkAeI=
 install:
 - make develop
 script:
