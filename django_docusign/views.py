@@ -1,17 +1,16 @@
-from django.views.generic.base import TemplateResponseMixin, ContextMixin, View
+from django.http import HttpResponse
+from django.views.generic.base import ContextMixin, View
 
 import pydocusign
 from django_anysign import api as django_anysign
 
 
-class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
+class SignatureCallbackView(ContextMixin, View):
     """Handle DocuSign's event notification.
 
     This view can handle both recipient and envelope events.
 
     """
-    template_name = 'docusign/signature_callback.html'
-
     @property
     def docusign_parser(self):
         """Parser for DocuSign's request.
@@ -72,19 +71,7 @@ class SignatureCallbackView(TemplateResponseMixin, ContextMixin, View):
                                'signer_{status}'.format(
                                    status=signer_event['status'].lower()))
             callback(signer_id=signer_event['recipient'])
-        # Render view.
-        context = self.get_context_data(**kwargs)
-        return self.render_to_response(context)
-
-    def get_context_data(self, **kwargs):
-        """Return context data.
-
-        Updates default data with ``signature`` and ``signer``.
-
-        """
-        data = super(SignatureCallbackView, self).get_context_data(**kwargs)
-        data['signature'] = self.signature
-        return data
+        return HttpResponse()
 
     @property
     def signature(self):
