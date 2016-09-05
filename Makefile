@@ -29,8 +29,7 @@ develop:
 #: demo - Install demo project.
 demo: develop
 	mkdir -p var
-	$(DEMO) syncdb --noinput
-	$(DEMO) migrate
+	$(DEMO) migrate --noinput
 
 
 #: serve - Run development server for demo project.
