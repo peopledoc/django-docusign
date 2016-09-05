@@ -163,7 +163,7 @@ class DocuSignBackend(django_anysign.SignatureBackend):
             recipients=signers,
         )
         envelope.envelopeId = self.docusign_client \
-                                  .create_envelope_from_document(envelope)
+                                  .create_envelope_from_documents(envelope)
         return envelope
 
     def create_signature_from_template(self, signature, callback_url=None,
