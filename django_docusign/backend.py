@@ -128,7 +128,8 @@ class DocuSignBackend(django_anysign.SignatureBackend):
                 yield document
 
     def create_signature_from_document(self, signature, callback_url=None,
-                                       subject=u'', blurb=u'', sobo_email=None):
+                                       subject=u'', blurb=u'',
+                                       sobo_email=None):
         """Register ``signature`` in DocuSign service, for a signature from
         document.
 
@@ -169,7 +170,8 @@ class DocuSignBackend(django_anysign.SignatureBackend):
         return envelope
 
     def create_signature_from_template(self, signature, callback_url=None,
-                                       subject=u'', blurb=u'', sobo_email=None):
+                                       subject=u'', blurb=u'',
+                                       sobo_email=None):
         """Register ``signature`` in DocuSign service, for a signature from
         document.
 
