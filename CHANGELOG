@@ -21,6 +21,9 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 - Add support of python3.
 
+- Feature #56 - Added authentication via OAuth2 and acting on behalf of other
+  users.
+
 
 0.12 (2015-09-10)
 -----------------
