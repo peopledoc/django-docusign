@@ -24,6 +24,8 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 - Feature #56 - Added authentication via OAuth2 and acting on behalf of other
   users.
 
+- Feature #66 - Added support for passing arbitrary parameters to pydocusign.
+
 
 0.12 (2015-09-10)
 -----------------
