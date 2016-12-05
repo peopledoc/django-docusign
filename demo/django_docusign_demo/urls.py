@@ -12,6 +12,11 @@ create_signature_view = views.CreateSignatureView.as_view()
 create_signature_template_view = views.CreateSignatureTemplateView.as_view()
 signer_view = views.SignerView.as_view()
 signer_return_view = views.SignerReturnView.as_view()
+signer_return_with_callback_view = views.SignerReturnWithCallbackView.as_view()
+signer_canceled_view = views.SignerCanceledView.as_view()
+signer_error_view = views.SignerErrorView.as_view()
+signer_declined_view = views.SignerDeclinedView.as_view()
+signer_signed_view = views.SignerSignedView.as_view()
 signature_callback_view = csrf_exempt(views.SignatureCallbackView.as_view())
 
 
@@ -31,6 +36,21 @@ urlpatterns = patterns(
                 url(r'^signer/(?P<pk>\d+)/return/$',
                     signer_return_view,
                     name='signer_return'),
+                url(r'^signer/(?P<pk>\d+)/return-with-callback/$',
+                    signer_return_with_callback_view,
+                    name='signer_return_with_callback'),
+                url(r'^signer/(?P<pk>\d+)/canceled/$',
+                    signer_canceled_view,
+                    name='signer_canceled'),
+                url(r'^signer/(?P<pk>\d+)/error/$',
+                    signer_error_view,
+                    name='signer_error'),
+                url(r'^signer/(?P<pk>\d+)/declined/$',
+                    signer_declined_view,
+                    name='signer_declined'),
+                url(r'^signer/(?P<pk>\d+)/signed/$',
+                    signer_signed_view,
+                    name='signer_signed'),
                 url(r'signature/callback/$',
                     signature_callback_view,
                     name='signature_callback')

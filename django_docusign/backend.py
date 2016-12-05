@@ -1,3 +1,5 @@
+import warnings
+
 from django.conf import settings
 
 import pydocusign
@@ -6,7 +8,7 @@ from django_anysign import api as django_anysign
 
 class DocuSignBackend(django_anysign.SignatureBackend):
     def __init__(self, name='DocuSign', code='docusign',
-                 url_namespace='anysign', **kwargs):
+                 url_namespace='anysign', use_callback=False, **kwargs):
         """Setup.
 
         Additional ``kwargs`` are proxied to
@@ -21,6 +23,9 @@ class DocuSignBackend(django_anysign.SignatureBackend):
         client_kwargs = self.get_client_kwargs(**kwargs)
         #: Instance of :class:`~pydocusign.client.DocuSignClient`
         self.docusign_client = pydocusign.DocuSignClient(**client_kwargs)
+        self.use_callback = use_callback
+        if self.use_callback:
+            warnings.warn("Callbacks are deprecated", DeprecationWarning)
 
     def get_client_kwargs(self, **kwargs):
         """Return keyword arguments for use with DocuSign client factory.
@@ -84,6 +89,27 @@ class DocuSignBackend(django_anysign.SignatureBackend):
             signers.append(signer)
             position += 1
         return signers
+
+    def get_docusign_recipient(self, signer):
+        """
+        Get the recipient (dict) matching the given signer
+        """
+        response = self.docusign_client.get_envelope_recipients(
+            signer.signature.signature_backend_id)
+
+        # get recipient matching the signer
+        for recipient in response['signers']:
+            if recipient['clientUserId'] == str(signer.pk):
+                return recipient
+        else:
+            raise Exception("Failed to retrieve Signer")
+
+    def is_last_signer(self, signer):
+        """Return True if ``signer`` is the last signer for the signature
+        request.
+        """
+        return not signer.signature.signers.filter(
+            signing_order__gt=signer.signing_order).exists()
 
     def get_docusign_roles(self, signature):
         """Return list of pydocusign's Role for Signature instance.
@@ -149,22 +175,26 @@ class DocuSignBackend(django_anysign.SignatureBackend):
                 )
             )
             i += 1
-        # Prepare event notifications (callbacks).
-        if callback_url is None:
-            callback_url = self.get_signature_callback_url(signature)
-        event_notification = pydocusign.EventNotification(
-            url=callback_url,
-        )
+        params = {}
+        params.update(env_params)
+        if self.use_callback:
+            # Prepare event notifications (callbacks).
+            if callback_url is None:
+                callback_url = self.get_signature_callback_url(signature)
+            params.update({
+                'eventNotification': pydocusign.EventNotification(
+                    url=callback_url,
+                )
+            })
         # Create envelope with embedded signing.
         envelope = pydocusign.Envelope(
             emailSubject=subject,
             emailBlurb=blurb,
-            eventNotification=event_notification,
             status=pydocusign.Envelope.STATUS_SENT,
             documents=documents,
             recipients=signers,
             sobo_email=sobo_email,
-            **env_params
+            **params
         )
         envelope.envelopeId = self.docusign_client \
                                   .create_envelope_from_documents(envelope)
@@ -179,22 +209,26 @@ class DocuSignBackend(django_anysign.SignatureBackend):
         """
         # Prepare roles.
         roles = self.get_docusign_roles(signature)
-        # Prepare event notifications (callbacks).
-        if callback_url is None:
-            callback_url = self.get_signature_callback_url(signature)
-        event_notification = pydocusign.EventNotification(
-            url=callback_url,
-        )
+        params = {}
+        params.update(env_params)
+        if self.use_callback:
+            # Prepare event notifications (callbacks).
+            if callback_url is None:
+                callback_url = self.get_signature_callback_url(signature)
+            params.update({
+                'eventNotification': pydocusign.EventNotification(
+                    url=callback_url,
+                )
+            })
         # Create envelope with embedded signing.
         envelope = pydocusign.Envelope(
             emailSubject=subject,
             emailBlurb=blurb,
-            eventNotification=event_notification,
             status=pydocusign.Envelope.STATUS_SENT,
             templateId=signature.signature_type.docusign_template_id,
             templateRoles=roles,
             sobo_email=sobo_email,
-            **env_params
+            **params
         )
         envelope.envelopeId = self.docusign_client \
                                   .create_envelope_from_template(envelope)

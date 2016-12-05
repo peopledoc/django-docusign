@@ -25,4 +25,5 @@ notice.
 """
 from django_docusign.backend import DocuSignBackend  # NoQA
 from django_docusign.forms import SignerForm  # NoQA
+from django_docusign.views import SignerReturnView  # NoQA
 from django_docusign.views import SignatureCallbackView  # NoQA

@@ -35,6 +35,10 @@ class SettingsForm(forms.Form):
         min_value=0.001,
         max_value=30,
     )
+    use_callback = forms.BooleanField(
+        label=_('use callback'),
+        required=False,
+    )
 
 
 class CreateSignatureForm(forms.Form):
@@ -55,6 +59,12 @@ class CreateSignatureForm(forms.Form):
         label=_('API callback URL'),
     )
 
+    def __init__(self, *args, **kwargs):
+        use_callback = kwargs.pop('use_callback')
+        super(CreateSignatureForm, self).__init__(*args, **kwargs)
+        if not use_callback:
+            del self.fields['callback_url']
+
 
 class CreateSignatureTemplateForm(forms.Form):
     """Signature from template creation form."""
@@ -74,3 +84,9 @@ class CreateSignatureTemplateForm(forms.Form):
     callback_url = forms.URLField(
         label=_('API callback URL'),
     )
+
+    def __init__(self, *args, **kwargs):
+        use_callback = kwargs.pop('use_callback')
+        super(CreateSignatureTemplateForm, self).__init__(*args, **kwargs)
+        if not use_callback:
+            del self.fields['callback_url']

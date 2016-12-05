@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block head_title %}{{ block.super }} &ndash; {% trans "Signature canceled" %}{% endblock %}
+{% block title %}{% trans "Signature canceled" %}{% endblock %}
+
+{% block content %}
+  <p>The signature process is not finished. Try again !</p>
+{% endblock %}
