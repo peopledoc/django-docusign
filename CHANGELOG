@@ -5,7 +5,7 @@ This document describes changes between each past release. For information
 about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 
-2.0 (unreleased)
+2.0 (2016-12-06)
 ----------------
 
 - Refactoring related to callbacks and docusign signer status, to handle
