@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block head_title %}{{ block.super }} &ndash; {% trans "Signature declined" %}{% endblock %}
+{% block title %}{% trans "Signature declined" %}{% endblock %}
+
+{% block content %}
+  <p>The signature process was declined.</p>
+{% endblock %}

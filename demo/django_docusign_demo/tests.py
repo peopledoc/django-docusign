@@ -2,6 +2,7 @@
 from contextlib import contextmanager
 import os
 import unittest
+import uuid
 try:
     from unittest import mock
 except ImportError:  # Python 2 fallback.
@@ -82,6 +83,8 @@ class SignatureFunctionalTestCase(django.test.TestCase):
     """Functional test suite for signature workflow."""
     #: Class-level signature instance, in order to reduce API calls.
     _signature = None
+    pydocusign_create_envelope_method = \
+        'pydocusign.DocuSignClient.create_envelope_from_documents'
 
     @property
     def signature(self):
@@ -115,6 +118,26 @@ class SignatureFunctionalTestCase(django.test.TestCase):
         """Can create a signature using 'create_signature' URL."""
         self.assertTrue(self.signature.signature_backend_id)
 
+    def test_create_signature_callback_enabled(self):
+        session = self.client.session
+        session['use_callback'] = True
+        session.save()
+
+        with mock.patch(self.pydocusign_create_envelope_method) \
+                as mock_envelope:
+            mock_envelope.return_value = str(uuid.uuid4())
+            self.assertTrue(self.signature.signature_backend_id)
+        envelope = mock_envelope.call_args_list[0][0][0]
+        self.assertIsNotNone(envelope.eventNotification)
+
+    def test_create_signature_callback_disabled(self):
+        with mock.patch(self.pydocusign_create_envelope_method) \
+                as mock_envelope:
+            mock_envelope.return_value = str(uuid.uuid4())
+            self.assertTrue(self.signature.signature_backend_id)
+        envelope = mock_envelope.call_args_list[0][0][0]
+        self.assertIsNone(envelope.eventNotification)
+
     def test_signer_view(self):
         """Signer view redirects to DocuSign."""
         url = reverse('anysign:signer',
@@ -123,6 +146,222 @@ class SignatureFunctionalTestCase(django.test.TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(
             response['Location'].startswith('https://demo.docusign.net'))
+
+    @mock.patch('pydocusign.DocuSignClient.get_envelope_recipients')
+    def test_signer_return_view_callback_enabled(self, mock_recipients):
+        session = self.client.session
+        session['use_callback'] = True
+        session.save()
+
+        signature = self.create_signature()
+        signer = signature.signers.all()[0]
+
+        url = reverse('anysign:signer_return', args=[signer.pk])
+        response = self.client.get(url)
+        self.assertFalse(mock_recipients.called)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse('anysign:signer_return_with_callback', args=[signer.pk]))
+        signature.refresh_from_db()
+        signer.refresh_from_db()
+        self.assertEqual(signature.status, 'draft')
+        self.assertEqual(signer.status, 'draft')
+
+    @mock.patch('pydocusign.DocuSignClient.get_envelope_recipients')
+    def test_signer_return_canceled(self, mock_recipients):
+        signature = self.create_signature()
+        signer = signature.signers.all()[0]
+
+        url = reverse('anysign:signer_return', args=[signer.pk])
+        response = self.client.get(url, {'event': 'cancel'})
+        self.assertFalse(mock_recipients.called)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse('anysign:signer_canceled', args=[signer.pk]))
+        signature.refresh_from_db()
+        signer.refresh_from_db()
+        self.assertEqual(signature.status, 'draft')
+        self.assertEqual(signer.status, 'draft')
+
+    @mock.patch('pydocusign.DocuSignClient.get_envelope_recipients')
+    def test_signer_return_did_nothing(self, mock_recipients):
+        signature = self.create_signature()
+        signer = signature.signers.all()[0]
+
+        mock_recipients.return_value = {
+            'signers': [
+                {'status': 'sent',
+                 'clientUserId': str(signer.pk)}
+            ]
+        }
+
+        url = reverse('anysign:signer_return', args=[signer.pk])
+        response = self.client.get(url)
+        self.assertTrue(mock_recipients.called)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse('anysign:signer_canceled', args=[signer.pk]))
+        signature.refresh_from_db()
+        signer.refresh_from_db()
+        self.assertEqual(signature.status, 'draft')
+        self.assertEqual(signer.status, 'draft')
+
+    @mock.patch('pydocusign.DocuSignClient.get_envelope_recipients')
+    def test_signer_return_authentification_failed(self, mock_recipients):
+        signature = self.create_signature()
+        signer = signature.signers.all()[0]
+
+        mock_recipients.return_value = {
+            'signers': [
+                {'status': 'sent',
+                 'clientUserId': str(signer.pk),
+                 'recipientAuthenticationStatus': {
+                        'accessCodeResult': {'status': 'Failed'}
+                 }}
+            ]
+        }
+
+        url = reverse('anysign:signer_return', args=[signer.pk])
+        response = self.client.get(url)
+        self.assertTrue(mock_recipients.called)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse('anysign:signer_error', args=[signer.pk]))
+        signature.refresh_from_db()
+        signer.refresh_from_db()
+        self.assertEqual(signature.status, 'draft')
+        self.assertEqual(signer.status, 'authentication_failed')
+
+    @mock.patch('pydocusign.DocuSignClient.get_envelope_recipients')
+    def test_signer_return_auto_responded(self, mock_recipients):
+        signature = self.create_signature()
+        signer = signature.signers.all()[0]
+
+        mock_recipients.return_value = {
+            'signers': [
+                {'status': 'auto_responded',
+                 'clientUserId': str(signer.pk)}
+            ]
+        }
+
+        url = reverse('anysign:signer_return', args=[signer.pk])
+        response = self.client.get(url)
+        self.assertTrue(mock_recipients.called)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse('anysign:signer_error', args=[signer.pk]))
+        signature.refresh_from_db()
+        signer.refresh_from_db()
+        self.assertEqual(signature.status, 'draft')
+        self.assertEqual(signer.status, 'auto_responded')
+
+    @mock.patch('pydocusign.DocuSignClient.get_envelope_recipients')
+    def test_signer_return_completed(self, mock_recipients):
+        signature = self.create_signature()
+        signer = signature.signers.all()[0]
+
+        mock_recipients.return_value = {
+            'signers': [
+                {'status': 'completed',
+                 'clientUserId': str(signer.pk)}
+            ]
+        }
+
+        url = reverse('anysign:signer_return', args=[signer.pk])
+        response = self.client.get(url)
+        self.assertTrue(mock_recipients.called)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse('anysign:signer_signed', args=[signer.pk]))
+        signature.refresh_from_db()
+        signer.refresh_from_db()
+        self.assertEqual(signature.status, 'draft')
+        self.assertEqual(signer.status, 'completed')
+
+    @mock.patch('pydocusign.DocuSignClient.get_envelope_recipients')
+    def test_signer_return_declined(self, mock_recipients):
+        signature = self.create_signature()
+        signer = signature.signers.all()[0]
+
+        mock_recipients.return_value = {
+            'signers': [
+                {'status': 'declined',
+                 'clientUserId': str(signer.pk),
+                 'declinedReason': u'Jeg ønsker ikke\nå signere.'}
+            ]
+        }
+
+        url = reverse('anysign:signer_return', args=[signer.pk])
+        response = self.client.get(url)
+        self.assertTrue(mock_recipients.called)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse('anysign:signer_declined', args=[signer.pk]))
+        signature.refresh_from_db()
+        signer.refresh_from_db()
+        self.assertEqual(signature.status, 'declined')
+        self.assertEqual(signer.status, 'declined')
+        self.assertEqual(signer.status_details, u'Jeg ønsker ikke\nå signere.')
+
+    @mock.patch('pydocusign.DocuSignClient.get_envelope_recipients')
+    def test_signer_all_signed(self, mock_recipients):
+        signature = self.create_signature()
+        signer1 = signature.signers.all()[0]
+        signer2 = signature.signers.all()[1]
+
+        mock_recipients.side_effect = [
+            {
+                'signers': [
+                    {'status': 'completed',
+                     'clientUserId': str(signer1.pk)},
+                    {'status': 'sent',
+                     'clientUserId': str(signer2.pk)}
+                ]
+            },
+            {
+                'signers': [
+                    {'status': 'completed',
+                     'clientUserId': str(signer1.pk)},
+                    {'status': 'completed',
+                     'clientUserId': str(signer2.pk)}
+                ]
+            },
+        ]
+
+        url = reverse('anysign:signer_return', args=[signer1.pk])
+        response = self.client.get(url)
+        self.assertTrue(mock_recipients.called)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse('anysign:signer_signed', args=[signer1.pk]))
+        signature.refresh_from_db()
+        signer1.refresh_from_db()
+        signer2.refresh_from_db()
+        self.assertEqual(signature.status, 'draft')
+        self.assertEqual(signer1.status, 'completed')
+        self.assertEqual(signer2.status, 'draft')
+
+        url = reverse('anysign:signer_return', args=[signer2.pk])
+        response = self.client.get(url)
+        self.assertTrue(mock_recipients.called)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse('anysign:signer_signed', args=[signer2.pk]))
+        signature.refresh_from_db()
+        signer1.refresh_from_db()
+        signer2.refresh_from_db()
+        self.assertEqual(signature.status, 'completed')
+        self.assertEqual(signer1.status, 'completed')
+        self.assertEqual(signer2.status, 'completed')
 
     def send_signature_callback(self, data):
         url = reverse('anysign:signature_callback')
@@ -166,7 +405,7 @@ class SignatureFunctionalTestCase(django.test.TestCase):
         }
         # First, we receive "sent" callback.
         self.send_signature_callback(data)
-        signature = models.Signature.objects.get(pk=signature.pk)
+        signature.refresh_from_db()
         self.assertEqual(signature.signers.get(signing_order=1).status,
                          'sent')
         self.assertEqual(signature.signers.get(signing_order=2).status,
@@ -176,7 +415,7 @@ class SignatureFunctionalTestCase(django.test.TestCase):
         data['RecipientStatuses'][0]['Delivered'] = "2014-10-06" \
                                                     "T01:10:02.000012"
         self.send_signature_callback(data)
-        signature = models.Signature.objects.get(pk=signature.pk)
+        signature.refresh_from_db()
         self.assertEqual(signature.signers.get(signing_order=1).status,
                          'delivered')
         self.assertEqual(signature.signers.get(signing_order=2).status,
@@ -186,7 +425,7 @@ class SignatureFunctionalTestCase(django.test.TestCase):
         data['RecipientStatuses'][0]['Signed'] = "2014-10-06" \
                                                  "T01:10:03.000012"
         self.send_signature_callback(data)
-        signature = models.Signature.objects.get(pk=signature.pk)
+        signature.refresh_from_db()
         self.assertEqual(signature.status, 'sent')
         self.assertEqual(signature.signers.get(signing_order=1).status,
                          'completed')
@@ -199,7 +438,7 @@ class SignatureFunctionalTestCase(django.test.TestCase):
         data['Status'] = "Completed"
         data['Completed'] = "2014-10-06T01:10:04.000012"
         self.send_signature_callback(data)
-        signature = models.Signature.objects.get(pk=signature.pk)
+        signature.refresh_from_db()
         self.assertEqual(signature.status, 'completed')
         self.assertEqual(signature.signers.get(signing_order=1).status,
                          'completed')
@@ -214,7 +453,7 @@ class SignatureFunctionalTestCase(django.test.TestCase):
         data['Status'] = "Declined"
         data['Declined'] = "2014-10-06T01:10:05.000012"
         self.send_signature_callback(data)
-        signature = models.Signature.objects.get(pk=signature.pk)
+        signature.refresh_from_db()
         self.assertEqual(signature.status, 'declined')
         self.assertEqual(signature.signers.get(signing_order=1).status,
                          'completed')
@@ -225,14 +464,16 @@ class SignatureFunctionalTestCase(django.test.TestCase):
         # Make sure we handle optional "decline reason" as well.
         data['RecipientStatuses'][1]['DeclineReason'] = "Do not sign a test!"
         self.send_signature_callback(data)
-        signature = models.Signature.objects.get(pk=signature.pk)
+        signature.refresh_from_db()
         self.assertEqual(signature.status, 'declined')
         self.assertEqual(signature.signers.get(signing_order=2).status_details,
                          u'Do not sign a test!')
 
 
 class SignatureTemplateFunctionalTestCase(SignatureFunctionalTestCase):
-    """Functional test suite for signature workflow."""
+    """Functional test suite for signature template workflow."""
+    pydocusign_create_envelope_method = \
+        'pydocusign.DocuSignClient.create_envelope_from_template'
 
     def create_signature(self):
         url = reverse('create_signature_template')
@@ -276,9 +517,11 @@ class DocuSignBackendTestCase(unittest.TestCase):
             'app_token': 'some-token',
             'timeout': 300.0,
         }
-        backend = django_docusign.DocuSignBackend(**explicit_options)
+        backend = django_docusign.DocuSignBackend(
+            use_callback=True, **explicit_options)
         for key, value in explicit_options.items():
             self.assertEqual(getattr(backend.docusign_client, key), value)
+        self.assertTrue(backend.use_callback)
 
     def test_setup_settings(self):
         """DocuSignBackend uses settings.DOCUSIGN_*."""
@@ -296,6 +539,7 @@ class DocuSignBackendTestCase(unittest.TestCase):
         for key, value in overrides.items():
             key = key.lower()[len('DOCUSIGN_'):]
             self.assertEqual(getattr(backend.docusign_client, key), value)
+        self.assertFalse(backend.use_callback)
 
     def test_setup_priority(self):
         """Explicit arguments have priority over settings."""
