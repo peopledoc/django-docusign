@@ -1,0 +1,5 @@
+coverage==4.1
+psycopg2>=2.6.2
+dj_database_url>=0.4.1
+pytest==3.0.6
+pytest-django==3.1.2

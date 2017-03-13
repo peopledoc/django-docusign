@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+COVERAGE_FLAGS="--cov=django_north --cov-report xml --cov-report term --cov-report html --cov-config .coveragerc"
+
+TESTS="tests/"
+
+if [ -z ${COVERAGE+x} ];
+    then
+    COVERAGE_FLAGS=""
+fi
+
+pytest -v $COVERAGE_FLAGS $TESTS
