@@ -24,6 +24,7 @@ pip-log.txt
 
 # Unit test / coverage reports
 .coverage
+coverage.xml
 .tox
 nosetests.xml
 htmlcov
@@ -45,3 +46,5 @@ output/*/index.html
 
 # Sphinx
 docs/_build
+
+.cache
