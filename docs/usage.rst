@@ -81,7 +81,7 @@ This command can only go forward: no possible revert like with south or django
 migrations. But as the migrations written by the DBA team are blue/green, that
 is not a problem !
 
-This command has no effects if the ``NORTH_MANAGE_DB`` is disabled.
+This command has no effects if the ``NORTH_MANAGE_DB`` setting is disabled.
 
 showmigrations
 ..............
@@ -92,7 +92,7 @@ showmigrations
 
 List available migrations, and indicate if they where applied or not.
 
-This command has no effects if the ``NORTH_MANAGE_DB`` is disabled.
+This command has no effects if the ``NORTH_MANAGE_DB`` setting is disabled.
 
 showfixtures
 ............
@@ -132,4 +132,11 @@ Reload the SQL fixtures, and reset the ContentType cache.
 
 This command is essential for the tests, especially for TransactionTestCase tests.
 
-This command has no effects if the ``NORTH_MANAGE_DB`` is disabled.
+This command has no effects if the ``NORTH_MANAGE_DB`` setting is disabled.
+
+Disabled Commands
+-----------------
+
+These commands are disabled whatever the value of the ``NORTH_MANAGE_DB`` setting:
+
+* ``makemigrations``
