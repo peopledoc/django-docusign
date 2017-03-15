@@ -74,7 +74,7 @@ Create a DB from scratch and migrate it to the version defined in the
 ``NORTH_TARGET_VERSION`` setting, or update an existing DB to migrate it to
 the correct version.
 
-This command knows which migrations were already applied, which migrations
+This command knows which migrations are already applied, which migrations
 should be applied.
 
 This command can only go forward: no possible revert like with south or django
@@ -133,6 +133,15 @@ Reload the SQL fixtures, and reset the ContentType cache.
 This command is essential for the tests, especially for TransactionTestCase tests.
 
 This command has no effects if the ``NORTH_MANAGE_DB`` setting is disabled.
+
+runserver
+.........
+
+.. code-block:: console
+
+    $ ./tests_manage.py runserver
+
+Display a warning if some migrations are not applied.
 
 Disabled Commands
 -----------------
