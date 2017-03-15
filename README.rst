@@ -47,6 +47,7 @@ In your ``settings.py`` :
         "django_north",
     ]
 
+    NORTH_MANAGE_DB = True
     NORTH_MIGRATIONS_ROOT = '/path/to/sql/migrations/')
     NORTH_TARGET_VERSION = '1.42'
 

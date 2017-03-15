@@ -14,16 +14,21 @@ In your ``settings.py`` :
         "django_north",
     ]
 
+    NORTH_MANAGE_DB = True
     NORTH_MIGRATIONS_ROOT = '/path/to/sql/migrations/')
     NORTH_TARGET_VERSION = '1.42'
 
 List of available settings:
 
+* ``NORTH_MANAGE_DB``: if ``True``, the database will be managed by north.
+  Default value ``False``
 * ``NORTH_MIGRATIONS_ROOT``: a path to your migration repository. **required**
-* ``NORTH_TARGET_VERSION``: the target SQL version. **required**
-  (the version needed for your codebase)
+* ``NORTH_TARGET_VERSION``: the target SQL version
+  (the version needed for your codebase). **required**
 * ``NORTH_SCHEMA_TPL``: default value ``schema_{}.sql``
 
+In production environnements, ``NORTH_MANAGE_DB`` should be disabled, because
+the database is managed directly by the DBA team (database as a service).
 
 Migration repository tree example:
 
@@ -53,6 +58,17 @@ See also some examples in ``tests/data`` folder.
 
 Available Commands
 ------------------
+
+showmigrations
+..............
+
+.. code-block:: console
+
+    $ ./tests_manage.py showmigrations
+
+List available migrations, and indicate if they where applied or not.
+
+This command has no effects if the ``NORTH_MANAGE_DB`` is disabled.
 
 showfixtures
 ............
