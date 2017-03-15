@@ -55,7 +55,7 @@ In your ``settings.py`` :
 Running Tests
 --------------
 
-You will need an usable a database in order to test the project. For example:
+You will need a usable database in order to test the project. For example:
 
 ::
 
