@@ -114,3 +114,22 @@ Basically:
 * permissions (``django.contrib.auth``)
 
 The site id 1 (``SITE_ID`` setting) is not checked by this command.
+
+Changed Commands
+----------------
+
+flush
+.....
+
+.. code-block:: console
+
+    $ ./tests_manage.py flush
+
+Did a truncate on all tables, where the original command did it only on tables
+defined in the django models.
+
+Reload the SQL fixtures, and reset the ContentType cache.
+
+This command is essential for the tests, especially for TransactionTestCase tests.
+
+This command has no effects if the ``NORTH_MANAGE_DB`` is disabled.
