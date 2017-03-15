@@ -7,7 +7,7 @@ if "DATABASE_URL" not in os.environ or \
         not os.environ["DATABASE_URL"].startswith("postgres://"):
     print("\n".join(
         l.strip() for l in
-        """It seems you have not configured the path to your PGSQL database."
+        """It seems you have not configured the path to your PGSQL database.
         To do so, use the DATABASE_URL environment variable like this :
 
         DATABASE_URL=postgres://USER:PASSWORD@HOST:PORT/NAME

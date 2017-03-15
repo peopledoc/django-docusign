@@ -23,6 +23,7 @@ parent = os.path.dirname(cwd)
 sys.path.append(parent)
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.north_project.settings'
+os.environ['DATABASE_URL'] = 'postgres://postgres:@/north'
 import django
 django.setup()
 import django_north
