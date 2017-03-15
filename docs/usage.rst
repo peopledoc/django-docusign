@@ -26,6 +26,10 @@ List of available settings:
 * ``NORTH_TARGET_VERSION``: the target SQL version
   (the version needed for your codebase). **required**
 * ``NORTH_SCHEMA_TPL``: default value ``schema_{}.sql``
+* ``NORTH_FIXTURES_TPL``: default value ``fixtures_{}.sql``
+* ``NORTH_ADDITIONAL_SCHEMA_FILES``: list of sql files to load before the schema.
+  For example: a file of DB roles, some extensions.
+  Default value; ``[]``
 
 In production environnements, ``NORTH_MANAGE_DB`` should be disabled, because
 the database is managed directly by the DBA team (database as a service).
@@ -58,6 +62,26 @@ See also some examples in ``tests/data`` folder.
 
 Available Commands
 ------------------
+
+migrate
+.......
+
+.. code-block:: console
+
+    $ ./tests_manage.py migrate
+
+Create a DB from scratch and migrate it to the version defined in the
+``NORTH_TARGET_VERSION`` setting, or update an existing DB to migrate it to
+the correct version.
+
+This command knows which migrations were already applied, which migrations
+should be applied.
+
+This command can only go forward: no possible revert like with south or django
+migrations. But as the migrations written by the DBA team are blue/green, that
+is not a problem !
+
+This command has no effects if the ``NORTH_MANAGE_DB`` is disabled.
 
 showmigrations
 ..............

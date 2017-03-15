@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if getattr(settings, 'NORTH_MANAGE_DB', False) is not True:
-            logger.info('migrate command disabled')
+            logger.info('showmigrations command disabled')
             return
 
         return self.show_list()

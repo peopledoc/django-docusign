@@ -8,7 +8,7 @@ try:
 except ImportError:
     from distutils.core import setup
 
-version = '1.0.1'
+version = '0.1.0'
 
 if sys.argv[-1] == 'publish':
     try:
@@ -42,7 +42,10 @@ setup(
         'django_north',
     ],
     include_package_data=True,
-    install_requires=["Django>=1.8,<1.9"],
+    install_requires=[
+        "Django>=1.8,<1.9",
+        "sqlparse",
+    ],
     tests_require=["tox"],
     license="MIT",
     zip_safe=False,

@@ -9,6 +9,7 @@ from django.db.migrations.recorder import \
 from django.db.utils import ProgrammingError
 
 
+fixtures_default_tpl = 'fixtures_{}.sql'
 schema_default_tpl = 'schema_{}.sql'
 
 
