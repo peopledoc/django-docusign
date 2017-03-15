@@ -83,17 +83,6 @@ is not a problem !
 
 This command has no effects if the ``NORTH_MANAGE_DB`` setting is disabled.
 
-showmigrations
-..............
-
-.. code-block:: console
-
-    $ ./tests_manage.py showmigrations
-
-List available migrations, and indicate if they where applied or not.
-
-This command has no effects if the ``NORTH_MANAGE_DB`` setting is disabled.
-
 showfixtures
 ............
 
@@ -114,6 +103,17 @@ Basically:
 * permissions (``django.contrib.auth``)
 
 The site id 1 (``SITE_ID`` setting) is not checked by this command.
+
+showmigrations
+..............
+
+.. code-block:: console
+
+    $ ./tests_manage.py showmigrations
+
+List available migrations, and indicate if they where applied or not.
+
+This command has no effects if the ``NORTH_MANAGE_DB`` setting is disabled.
 
 Changed Commands
 ----------------
@@ -149,3 +149,5 @@ Disabled Commands
 These commands are disabled whatever the value of the ``NORTH_MANAGE_DB`` setting:
 
 * ``makemigrations``
+* ``sqlmigrate``
+* ``squashmigrations``
