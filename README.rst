@@ -13,7 +13,7 @@ Django North
 
 Yet another way to manage migrations: DBA as a service.
 
-Let's your favorite DBAs define the database schema, and provide blue/green
+Let your favorite DBAs define the database schema, and provide blue/green
 migration files. Drop django native migrations, and use DBA's migrations
 everywhere.
 
