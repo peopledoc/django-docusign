@@ -15,7 +15,7 @@ In your ``settings.py`` :
     ]
 
     NORTH_MANAGE_DB = True
-    NORTH_MIGRATIONS_ROOT = '/path/to/sql/migrations/')
+    NORTH_MIGRATIONS_ROOT = '/path/to/sql/migrations/'
     NORTH_TARGET_VERSION = '1.42'
 
 List of available settings:
