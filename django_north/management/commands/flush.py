@@ -27,6 +27,10 @@ from django_north.management.runner import Script
 logger = logging.getLogger(__name__)
 
 
+# warning: backport from django 1.8
+# this command changed a lot in 1.10
+
+
 class Command(BaseCommand):
     help = ('Removes ALL DATA from the database, including data added during '
             'migrations. Unmigrated apps will also have their initial_data '
@@ -127,7 +131,11 @@ Are you sure you want to do this?
                 app_options = options.copy()
                 for app_label in executor.loader.unmigrated_apps:
                     app_options['app_label'] = app_label
-                    call_command('loaddata', 'initial_data', **app_options)
+                    try:
+                        call_command('loaddata', 'initial_data', **app_options)
+                    except CommandError:
+                        # fails with django 1.10 if initial_data does not exist
+                        pass
         else:
             self.stdout.write("Flush cancelled.\n")
 
