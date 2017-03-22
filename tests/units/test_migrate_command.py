@@ -28,7 +28,7 @@ def test_migrate(mocker, settings, manage):
 
 def test_migrate_run_script(settings, mocker):
     root = os.path.dirname(__file__)
-    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'data/project')
+    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'data/sql')
 
     mock_run = mocker.patch('django_north.management.runner.Script.run')
 
@@ -42,7 +42,7 @@ def test_migrate_run_script(settings, mocker):
 
 def test_migrate_init_schema(settings, mocker):
     root = os.path.dirname(__file__)
-    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'data/project')
+    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'data/sql')
 
     mocker.patch(
         'django_north.management.migrations.get_version_for_init',

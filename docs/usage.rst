@@ -58,7 +58,7 @@ Migration repository tree example:
         schema_1.1.sql
         schema_2.0.sql
 
-See also some examples in ``tests/data`` folder.
+See also some examples in ``tests/units/data/project`` folder (used for unit tests).
 
 Available Commands
 ------------------

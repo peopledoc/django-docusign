@@ -24,7 +24,7 @@ def test_get_known_versions(settings):
         'settings.NORTH_MIGRATIONS_ROOT is improperly configured.' in e.value)
 
     # correct path
-    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'data/project')
+    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'data/sql')
     result = migrations.get_known_versions()
     assert result == ['16.9', '16.11', '16.12', '17.01', '17.02', '17.3']
 
@@ -67,7 +67,7 @@ def test_get_current_version(mocker):
 
 def test_get_migrations_to_apply(settings):
     root = os.path.dirname(__file__)
-    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'data/project')
+    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'data/sql')
 
     # version folder does not exist
     with pytest.raises(migrations.DBException) as e:
@@ -106,7 +106,7 @@ def test_get_migrations_to_apply(settings):
 
 def test_build_migration_plan(settings, mocker):
     root = os.path.dirname(__file__)
-    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'data/project')
+    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'data/sql')
     settings.NORTH_TARGET_VERSION = '17.02'
 
     mock_get_applied_versions = mocker.patch(
@@ -298,7 +298,7 @@ def test_build_migration_plan(settings, mocker):
 
 def test_get_version_for_init(settings, mocker):
     root = os.path.dirname(__file__)
-    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'data/project')
+    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'data/sql')
     mock_versions = mocker.patch(
         'django_north.management.migrations.get_known_versions')
 

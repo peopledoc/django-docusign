@@ -11,7 +11,7 @@ from django_north.management.runner import SimpleBlock
 
 def test_script_init(settings):
     root = os.path.dirname(__file__)
-    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'data/project')
+    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'data/sql')
 
     # Simple script
     path = os.path.join(settings.NORTH_MIGRATIONS_ROOT,
@@ -42,7 +42,7 @@ def test_script_init(settings):
 
 def test_simple_script_run(settings, mocker):
     root = os.path.dirname(__file__)
-    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'data/project')
+    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'data/sql')
 
     mock_simple_run = mocker.patch(
         'django_north.management.runner.SimpleBlock.run')
@@ -65,7 +65,7 @@ def test_simple_script_run(settings, mocker):
 
 def test_manual_script_run(settings, mocker):
     root = os.path.dirname(__file__)
-    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'data/project')
+    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'data/sql')
 
     mock_simple_run = mocker.patch(
         'django_north.management.runner.SimpleBlock.run')
@@ -88,7 +88,7 @@ def test_manual_script_run(settings, mocker):
 
 def test_block_run(settings, mocker):
     root = os.path.dirname(__file__)
-    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'data/project')
+    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'data/sql')
 
     cursor = mocker.MagicMock(rowcount=0)
     mock_cursor = mocker.patch('django.db.connection.cursor')
