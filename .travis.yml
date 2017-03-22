@@ -1,6 +1,9 @@
 # Config file for automatic testing at travis-ci.org
 language: python
 
+addons:
+    postgresql: "9.4"
+
 matrix:
     include:
       # Python version is just for the look on travis.

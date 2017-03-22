@@ -23,6 +23,7 @@ everywhere.
 Requirements
 ------------
 
++ **Postgresql only** (>= 9.4)
 + Django, obviously. v1.8 (for the moment)
 + Running under Python 2.7 (for the moment)
 
@@ -55,7 +56,7 @@ In your ``settings.py`` :
 Running Tests
 --------------
 
-You will need a usable database in order to test the project. For example:
+You will need a usable Postgresql database in order to test the project. For example:
 
 ::
 
