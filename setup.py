@@ -43,7 +43,7 @@ setup(
     ],
     include_package_data=True,
     install_requires=[
-        "Django>=1.8,<1.9",
+        "Django>=1.8,<1.10",
         "sqlparse",
     ],
     tests_require=["tox"],
@@ -54,6 +54,7 @@ setup(
         'Development Status :: 4 - Beta',
         'Framework :: Django',
         'Framework :: Django :: 1.8',
+        'Framework :: Django :: 1.9',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
