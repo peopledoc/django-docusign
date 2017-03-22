@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django_north",
     "tests.north_app",
+    "django_extensions",
 ]
 STATIC_URL = "/static/"
 SITE_ID = 1
@@ -32,4 +33,20 @@ MIDDLEWARE_CLASSES = ()
 LOGGING = {}
 SECRET_KEY = "yay"
 
+root = os.path.dirname(__file__)
+
+
+class DisableMigrations(object):
+
+    def __contains__(self, item):
+        return True
+
+    def __getitem__(self, item):
+        return "notmigrations"
+
+
+MIGRATION_MODULES = DisableMigrations()
+
 NORTH_MANAGE_DB = True
+NORTH_MIGRATIONS_ROOT = os.path.join(root, 'sql')
+NORTH_TARGET_VERSION = '1.2'

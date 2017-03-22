@@ -58,7 +58,8 @@ Migration repository tree example:
         schema_1.1.sql
         schema_2.0.sql
 
-See also some examples in ``tests/units/data/project`` folder (used for unit tests).
+See also some examples in ``tests/units/data/project`` folder (used for unit tests),
+or in ``tests/north_project/sql`` folder (used for functional tests).
 
 Available Commands
 ------------------
@@ -103,6 +104,12 @@ Basically:
 * permissions (``django.contrib.auth``)
 
 The site id 1 (``SITE_ID`` setting) is not checked by this command.
+
+.. note::
+
+    When you add a Model, you have to run this command twice to get:
+    1/ the new content type
+    2/ when the content type exists, the new permissions
 
 showmigrations
 ..............
@@ -151,3 +158,38 @@ These commands are disabled whatever the value of the ``NORTH_MANAGE_DB`` settin
 * ``makemigrations``
 * ``sqlmigrate``
 * ``squashmigrations``
+
+Tips
+----
+
+Output SQL commands
+...................
+
+For example, if you want to use the ``sqlall`` command to prints the CREATE TABLE,
+custom SQL and CREATE INDEX SQL statements for the init of a DB schema, for an
+external app with a migration folder (as ``django.contrib.auth`` app for example),
+put this in your ``settings.py`` :
+
+.. code-block:: python
+
+    class DisableMigrations(object):
+
+        def __contains__(self, item):
+            return True
+
+        def __getitem__(self, item):
+            return "notmigrations"
+
+
+    MIGRATION_MODULES = DisableMigrations()
+
+Then run the ``sqlall command``:
+
+.. code-block:: console
+
+    $ ./tests_manage.py sqlall <app>
+
+Generate Schema Files
+.....................
+
+At the end of a SQL release, just do a sqldump (``pg_dump -s`` for posgtres for example).
