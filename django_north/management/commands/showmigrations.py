@@ -26,7 +26,7 @@ class Command(BaseCommand):
         """
         migration_plan = migrations.build_migration_plan()
         if migration_plan is None:
-            self.stdout.write(self.style.MIGRATE_FAILURE("Schema not inited"))
+            self.stdout.write(self.style.ERROR("Schema not inited"))
             return
 
         self.stdout.write(
