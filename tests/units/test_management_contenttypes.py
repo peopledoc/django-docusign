@@ -1,5 +1,8 @@
 from django.apps import AppConfig
+from django.apps import apps
 from django.contrib.contenttypes.models import ContentType
+
+import pytest
 
 from django_north.management import contenttypes
 
@@ -8,21 +11,18 @@ class CustomAppConfig(AppConfig):
     path = 'some.path.to.somewhere'
 
 
-def test_get_all_contenttypes_for_app_config(mocker):
-    ct1 = ContentType(app_label='myapp', model='mymodel1')
-    ct2 = ContentType(app_label='myapp', model='mymodel2')
-    app_config = CustomAppConfig('myapp', mocker.Mock())
-
-    mock_filter = mocker.patch('django.db.models.query.QuerySet.filter')
-    mock_filter.return_value = [ct1, ct2]
+@pytest.mark.django_db
+def test_get_all_contenttypes_for_app_config():
+    ct1 = ContentType.objects.get(app_label='north_app', model='author')
+    ct2 = ContentType.objects.get(app_label='north_app', model='book')
+    app_config = apps.get_app_config('north_app')
 
     result = contenttypes.get_all_contenttypes_for_app_config(app_config)
 
     assert result == {
-        'mymodel1': ct1,
-        'mymodel2': ct2,
+        'author': ct1,
+        'book': ct2,
     }
-    assert mock_filter.call_args == mocker.call(app_label='myapp')
 
 
 def test_get_known_models_for_app_config(mocker):
