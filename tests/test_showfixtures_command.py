@@ -107,7 +107,7 @@ def test_missing_permissions(mocker):
         [p1, p2],
         [p3],
         []]
-    assert command.missing_permisions() == [
+    assert command.missing_permissions() == [
         "INSERT INTO auth_permission(codename, name, content_type_id) "
         "VALUES('perm1', 'Perm1', (SELECT id FROM django_content_type "
         "WHERE app_label = 'myapp1' AND model = 'mymodel1'));",
@@ -121,7 +121,7 @@ def test_missing_permissions(mocker):
 
     # no missing permissions
     mock_get_permissions.side_effect = [[], [], []]
-    assert command.missing_permisions() == []
+    assert command.missing_permissions() == []
 
 
 def test_showfixtures(mocker):
@@ -135,7 +135,7 @@ def test_showfixtures(mocker):
         return_value=['INSERT 1', 'INSERT 2', 'INSERT 3'])
     mocker.patch(
         'django_north.management.commands.showfixtures.Command'
-        '.missing_permisions',
+        '.missing_permissions',
         return_value=['INSERT 4', 'INSERT 5', 'INSERT 6'])
 
     stdout = mocker.patch('sys.stdout', new_callable=StringIO)

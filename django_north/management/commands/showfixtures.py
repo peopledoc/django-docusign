@@ -21,7 +21,7 @@ class Command(BaseCommand):
         if options['unknown_contenttypes']:
             fixtures += self.unknown_contenttypes()
         fixtures += self.missing_contenttypes()
-        fixtures += self.missing_permisions()
+        fixtures += self.missing_permissions()
 
         return "\n".join(fixtures) + "\n"
 
@@ -54,7 +54,7 @@ class Command(BaseCommand):
             for ct in cts
         ]
 
-    def missing_permisions(self):
+    def missing_permissions(self):
         """
         Permissions to create
         """
