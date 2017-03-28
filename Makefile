@@ -1,6 +1,8 @@
 .PHONY: clean-pyc clean-build docs help
 .DEFAULT_GOAL := help
 
+TOX = tox
+
 help:
 	@perl -nle'print $& if m{^[a-zA-Z_-]+:.*?## .*$$}' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-25s\033[0m %s\n", $$1, $$2}'
 
@@ -35,10 +37,5 @@ docs: ## generate Sphinx HTML documentation, including API docs
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 
-release: clean ## package and upload a release
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
-
-sdist: clean ## package
-	python setup.py sdist
-	ls -l dist
+release: clean  ## release - Tag and push to PyPI
+	$(TOX) -e release

@@ -3,4 +3,5 @@ include CONTRIBUTING.rst
 include HISTORY.rst
 include LICENSE
 include README.rst
+include VERSION
 recursive-include django_north *.html *.png *.gif *js *.css *jpg *jpeg *svg *py
