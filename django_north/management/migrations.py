@@ -18,6 +18,14 @@ class DBException(Exception):
     pass
 
 
+def is_version(vstring):
+    try:
+        StrictVersion(vstring)
+    except ValueError:
+        return False
+    return True
+
+
 class MigrationRecorder(DjangoMigrationRecorder):
     def record_applied(self, app, name):
         """
@@ -39,13 +47,6 @@ def get_known_versions():
     except StopIteration:
         raise ImproperlyConfigured(
             'settings.NORTH_MIGRATIONS_ROOT is improperly configured.')
-
-    def is_version(vstring):
-        try:
-            StrictVersion(vstring)
-        except ValueError:
-            return False
-        return True
 
     # exclude symlinks and some folders (like schemas, fixtures, etc)
     versions = [
@@ -80,13 +81,38 @@ def get_current_version():
     except AttributeError:
         import_string = (
             'django_north.management.migrations'
-            '.get_current_version_from_comment')
+            '.get_current_version_from_table')
 
     module_path, factory_name = import_string.rsplit('.', 1)
     module = import_module(module_path)
     factory = getattr(module, factory_name)
 
     return factory()
+
+
+def get_current_version_from_table():
+    """
+    Return the current version of the database, from sql_version table.
+    Return None if the table does not exist (schema not inited).
+    """
+    with connection.cursor() as cursor:
+        try:
+            cursor.execute("SELECT version_num FROM sql_version;")
+        except ProgrammingError:
+            # table does not exist ?
+            return None
+
+        rows = cursor.fetchall()
+
+    versions = [row[0] for row in rows if is_version(row[0])]
+    if not versions:
+        return None
+
+    # sort versions
+    versions.sort(key=StrictVersion)
+
+    # return the last one
+    return versions[-1]
 
 
 def get_current_version_from_comment():
@@ -105,14 +131,14 @@ def get_current_version_from_comment():
         row = cursor.fetchone()
         comment = row[0]
 
-        # no comment
-        if comment is None:
-            raise DBException('No comment found on django_site.')
+    # no comment
+    if comment is None:
+        raise DBException('No comment found on django_site.')
 
-        # parse comment
-        if 'version ' not in comment:
-            raise DBException("No version found in django_site's comment.")
-        return comment.replace('version ', '').strip()
+    # parse comment
+    if 'version ' not in comment:
+        raise DBException("No version found in django_site's comment.")
+    return comment.replace('version ', '').strip()
 
 
 def get_applied_migrations(version):

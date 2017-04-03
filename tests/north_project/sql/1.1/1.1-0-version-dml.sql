@@ -1,1 +1,7 @@
-COMMENT ON TABLE django_site IS 'version 1.1';
+BEGIN;
+
+
+INSERT INTO sql_version(version_num) VALUES ('1.1');
+
+
+COMMIT;

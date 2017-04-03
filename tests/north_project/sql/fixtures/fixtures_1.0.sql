@@ -41,4 +41,6 @@ INSERT INTO auth_permission(codename, name, content_type_id) VALUES('add_book', 
 INSERT INTO auth_permission(codename, name, content_type_id) VALUES('change_book', 'Can change book', (SELECT id FROM django_content_type WHERE app_label = 'north_app' AND model = 'book'));
 INSERT INTO auth_permission(codename, name, content_type_id) VALUES('delete_book', 'Can delete book', (SELECT id FROM django_content_type WHERE app_label = 'north_app' AND model = 'book'));
 
+INSERT INTO sql_version(version_num) VALUES ('1.0');
+
 COMMIT;
