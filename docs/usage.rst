@@ -29,9 +29,11 @@ List of available settings:
 * ``NORTH_FIXTURES_TPL``: default value ``fixtures_{}.sql``
 * ``NORTH_ADDITIONAL_SCHEMA_FILES``: list of sql files to load before the schema.
   For example: a file of DB roles, some extensions.
-  Default value; ``[]``
+  Default value: ``[]``
+* ``NORTH_CURRENT_VERSION_DETECTOR``: the current version detector.
+  Default value: ``django_north.management.migrations.get_current_version_from_table``
 
-In production environnements, ``NORTH_MANAGE_DB`` should be disabled, because
+In production environments, ``NORTH_MANAGE_DB`` should be disabled, because
 the database is managed directly by the DBA team (database as a service).
 
 Migration repository tree example:
@@ -60,6 +62,74 @@ Migration repository tree example:
 
 See also some examples in ``tests/test_data/sql`` folder (used for unit tests),
 or in ``tests/north_project/sql`` folder (used for realistic tests).
+
+The migrations are alphabetical ordered.
+
+Currect version detector
+........................
+
+``django-north`` needs to know the current version, to init or upgrade
+the database schema. Because it depends on your contract with the DBA team,
+it is possible to customize the current version detector.
+
+``django-north`` provides two detectors:
+
+* ``django_north.management.migrations.get_current_version_from_table``
+* ``django_north.management.migrations.get_current_version_from_comment``
+
+But you can also write your own detector.
+
+Just set the ``NORTH_CURRENT_VERSION_DETECTOR`` setting to use the chosen one.
+
+It is possible to write a detector which just queries the ``django_migration``
+table, but we decided to implement solutions that do not depend on migrations
+themselves: the ``django_migration`` table is filled by the ``django-north`` tool,
+which is not used in production environments.
+
+It can be usefull to have this information in production environments: you will
+be able to check that you can deploy a new code version.
+
+From Table
+++++++++++
+
+The default detector.
+
+The first schema has to create a table like:
+
+.. code-block:: sql
+
+    CREATE TABLE sql_version (
+        version_num text UNIQUE NOT NULL
+    );
+
+Init the version in the corresponding fixtures file (dml):
+
+.. code-block:: sql
+
+    INSERT INTO sql_version(version_num) VALUES ('1.0');
+
+And the version upgrade in the first migration of each version (a dml file):
+
+.. code-block:: sql
+
+    INSERT INTO sql_version(version_num) VALUES ('2.0');
+
+From Comment
+++++++++++++
+
+For this detector you need to have a ``django_site`` table.
+
+Init the version in the schema (ddl):
+
+.. code-block:: sql
+
+    COMMENT ON TABLE django_site IS 'version 1.0';
+
+And the version upgrade in the first migration of each version (a dml file):
+
+.. code-block:: sql
+
+    COMMENT ON TABLE django_site IS 'version 2.0';
 
 Available Commands
 ------------------
