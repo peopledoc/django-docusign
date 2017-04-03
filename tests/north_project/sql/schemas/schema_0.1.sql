@@ -1,3 +1,10 @@
+-- Init version table --
+
+CREATE TABLE sql_version (
+    version_num text UNIQUE NOT NULL
+)
+;
+
 -- Init django tables --
 
 CREATE TABLE "auth_permission" (
@@ -77,8 +84,6 @@ CREATE TABLE "django_site" (
     "name" varchar(50) NOT NULL
 )
 ;
-
-COMMENT ON TABLE django_site IS 'version 0.1';
 
 CREATE TABLE django_migrations (
     "id" serial NOT NULL PRIMARY KEY,

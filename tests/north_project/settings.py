@@ -49,4 +49,4 @@ MIGRATION_MODULES = DisableMigrations()
 
 NORTH_MANAGE_DB = True
 NORTH_MIGRATIONS_ROOT = os.path.join(root, 'sql')
-NORTH_TARGET_VERSION = '1.2'
+NORTH_TARGET_VERSION = '1.3'

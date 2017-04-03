@@ -33,4 +33,6 @@ INSERT INTO auth_permission(codename, name, content_type_id) VALUES('add_site', 
 INSERT INTO auth_permission(codename, name, content_type_id) VALUES('change_site', 'Can change site', (SELECT id FROM django_content_type WHERE app_label = 'sites' AND model = 'site'));
 INSERT INTO auth_permission(codename, name, content_type_id) VALUES('delete_site', 'Can delete site', (SELECT id FROM django_content_type WHERE app_label = 'sites' AND model = 'site'));
 
+INSERT INTO sql_version(version_num) VALUES ('0.1');
+
 COMMIT;
