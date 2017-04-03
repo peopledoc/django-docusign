@@ -1,7 +1,6 @@
 import os
 
 from django.core.exceptions import ImproperlyConfigured
-from django.db.utils import ProgrammingError
 
 import pytest
 
@@ -27,42 +26,6 @@ def test_get_known_versions(settings):
     settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'test_data/sql')
     result = migrations.get_known_versions()
     assert result == ['16.9', '16.11', '16.12', '17.01', '17.02', '17.3']
-
-
-def test_get_current_version(mocker):
-    cursor = mocker.MagicMock()
-    mock_cursor = mocker.patch('django.db.connection.cursor')
-    mock_cursor.return_value.__enter__.return_value = cursor
-
-    # table does not exist
-    cursor.execute.side_effect = ProgrammingError
-    assert migrations.get_current_version() is None
-
-    cursor.execute.side_effect = None
-
-    # no comment
-    cursor.fetchone.return_value = [None]
-    with pytest.raises(migrations.DBException) as e:
-        migrations.get_current_version()
-    assert 'No comment found on django_site.' in e.value
-
-    # bad comment
-    cursor.fetchone.return_value = ['comment']
-    with pytest.raises(migrations.DBException) as e:
-        migrations.get_current_version()
-    assert "No version found in django_site's comment." in e.value
-    cursor.fetchone.return_value = ['version']
-    with pytest.raises(migrations.DBException) as e:
-        migrations.get_current_version()
-    assert "No version found in django_site's comment." in e.value
-    cursor.fetchone.return_value = ['version17.01']
-    with pytest.raises(migrations.DBException) as e:
-        migrations.get_current_version()
-    assert "No version found in django_site's comment." in e.value
-
-    # correct comment
-    cursor.fetchone.return_value = [' version  17.01 ']
-    assert migrations.get_current_version() == '17.01'
 
 
 def test_get_migrations_to_apply(settings):

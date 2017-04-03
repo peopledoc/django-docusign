@@ -1,5 +1,6 @@
 import os
 from distutils.version import StrictVersion
+from importlib import import_module
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -71,8 +72,27 @@ def get_applied_versions():
 
 def get_current_version():
     """
+    Return the current version of the database.
+    Return None if the schema is not inited.
+    """
+    try:
+        import_string = settings.NORTH_CURRENT_VERSION_DETECTOR
+    except AttributeError:
+        import_string = (
+            'django_north.management.migrations'
+            '.get_current_version_from_comment')
+
+    module_path, factory_name = import_string.rsplit('.', 1)
+    module = import_module(module_path)
+    factory = getattr(module, factory_name)
+
+    return factory()
+
+
+def get_current_version_from_comment():
+    """
     Return the current version of the database, from django_site comment.
-    Return None if the table django_site does not exist.
+    Return None if the table django_site does not exist (schema not inited).
     """
     with connection.cursor() as cursor:
         try:
