@@ -6,10 +6,10 @@ History
 0.1.1 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Add the possibility to configure the current version detector
 
 
 0.1.0 (2017-03-28)
 ++++++++++++++++++
 
-* First release on PyPI.
+- First release on PyPI.
