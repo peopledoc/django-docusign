@@ -3,7 +3,7 @@
 History
 -------
 
-0.1.1 (unreleased)
+0.1.1 (2017-04-11)
 ++++++++++++++++++
 
 - Add the possibility to configure the current version detector
