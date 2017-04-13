@@ -90,11 +90,13 @@ class MetaBlock(Block):
 
 class Script(object):
     def __init__(self, file_handle):
-        is_manual = '/manual/' in file_handle.name
-        if not is_manual:
-            self.block_list = [SimpleBlock()]
-        else:
+        is_manual = self.is_manual(file_handle.name)
+        if is_manual:
             self.block_list = [Block()]
+        elif self.contains_concurrently(file_handle):
+            self.block_list = [Block()]
+        else:
+            self.block_list = [SimpleBlock()]
         for line in file_handle:
             if line.startswith("--meta-psql:") and is_manual:
                 self.block_list[-1].close()
@@ -112,3 +114,15 @@ class Script(object):
     def run(self, db):
         for block in self.block_list:
             block.run(db)
+
+    def is_manual(self, file_name):
+        return '/manual/' in file_name
+
+    def contains_concurrently(self, file_handle):
+        for line in file_handle:
+            if 'concurrently' in line.lower():
+                file_handle.seek(0)
+                return True
+
+        file_handle.seek(0)
+        return False

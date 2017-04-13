@@ -6,7 +6,7 @@ History
 0.1.2 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Use a Block if the sql file contains a CONCURRENTLY instruction
 
 
 0.1.1 (2017-04-11)
