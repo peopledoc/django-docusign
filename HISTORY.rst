@@ -3,7 +3,7 @@
 History
 -------
 
-0.1.2 (unreleased)
+0.1.2 (2017-04-13)
 ++++++++++++++++++
 
 - Use a Block if the sql file contains a CONCURRENTLY instruction
