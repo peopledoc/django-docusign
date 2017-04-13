@@ -16,9 +16,6 @@ matrix:
         - python: 2.7
           env: TOX_ENV=py27-django110
 
-        - python: 2.7
-          env: TOX_ENV=py27-djangostable
-
         - env: TOX_ENV=linters
 
 install:
