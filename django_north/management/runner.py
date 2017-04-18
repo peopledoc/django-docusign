@@ -1,5 +1,7 @@
 import logging
 
+from django.conf import settings
+
 import sqlparse
 
 logger = logging.getLogger(__name__)
@@ -93,7 +95,7 @@ class Script(object):
         is_manual = self.is_manual(file_handle.name)
         if is_manual:
             self.block_list = [Block()]
-        elif self.contains_concurrently(file_handle):
+        elif self.contains_non_transactiona_keyword(file_handle):
             self.block_list = [Block()]
         else:
             self.block_list = [SimpleBlock()]
@@ -118,11 +120,15 @@ class Script(object):
     def is_manual(self, file_name):
         return '/manual/' in file_name
 
-    def contains_concurrently(self, file_handle):
+    def contains_non_transactiona_keyword(self, file_handle):
+        keywords = getattr(
+            settings, 'NORTH_NON_TRANSACTIONAL_KEYWORDS',
+            ['CONCURRENTLY', 'ALTER TYPE'])
         for line in file_handle:
-            if 'concurrently' in line.lower():
-                file_handle.seek(0)
-                return True
+            for kw in keywords:
+                if kw.lower() in line.lower():
+                    file_handle.seek(0)
+                    return True
 
         file_handle.seek(0)
         return False

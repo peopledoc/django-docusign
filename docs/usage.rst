@@ -32,6 +32,11 @@ List of available settings:
   Default value: ``[]``
 * ``NORTH_CURRENT_VERSION_DETECTOR``: the current version detector.
   Default value: ``django_north.management.migrations.get_current_version_from_table``
+* ``NORTH_NON_TRANSACTIONAL_KEYWORDS``: list of keywords.
+  If a keyword is found in a SQL non manual file, the file will always be run
+  SQL instruction by SQL instruction. Else, a non manual file is run in a
+  single execute call.
+  Default value: ``['CONCURRENTLY', 'ALTER TYPE']``
 
 In production environments, ``NORTH_MANAGE_DB`` should be disabled, because
 the database is managed directly by the DBA team (database as a service).

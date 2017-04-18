@@ -42,7 +42,8 @@ def test_script_init(settings):
     assert isinstance(script.block_list[2], SimpleBlock) is False
     assert isinstance(script.block_list[2], Block) is True
 
-    # Non manual script but is contains 'CONCURRENTLY' keyword
+    # Non manual script but it contains 'CONCURRENTLY' keyword
+    settings.NORTH_NON_TRANSACTIONAL_KEYWORDS = ['CONCURRENTLY']
     path = os.path.join(settings.NORTH_MIGRATIONS_ROOT,
                         '17.01/17.01-feature_b-ddl.sql')
     with io.open(path, 'r', encoding='utf8') as f:
@@ -50,6 +51,15 @@ def test_script_init(settings):
     assert len(script.block_list) == 1
     assert isinstance(script.block_list[0], SimpleBlock) is False
     assert isinstance(script.block_list[0], Block) is True
+
+    # Non manual script but 'CONCURRENTLY' is not a keywor
+    settings.NORTH_NON_TRANSACTIONAL_KEYWORDS = []
+    path = os.path.join(settings.NORTH_MIGRATIONS_ROOT,
+                        '17.01/17.01-feature_b-ddl.sql')
+    with io.open(path, 'r', encoding='utf8') as f:
+        script = Script(f)
+    assert len(script.block_list) == 1
+    assert isinstance(script.block_list[0], SimpleBlock) is True
 
 
 def test_simple_script_run(settings, mocker):
