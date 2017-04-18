@@ -3,7 +3,7 @@
 History
 -------
 
-0.1.3 (unreleased)
+0.1.3 (2017-04-18)
 ++++++++++++++++++
 
 - Use a Block if the sql file contains a 'ALTER TYPE' instruction
