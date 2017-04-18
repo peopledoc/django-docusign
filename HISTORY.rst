@@ -6,7 +6,8 @@ History
 0.1.3 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Use a Block if the sql file contains a 'ALTER TYPE' instruction
+  Add a setting to customize the files to run in a Block.
 
 
 0.1.2 (2017-04-13)
