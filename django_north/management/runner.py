@@ -95,7 +95,7 @@ class Script(object):
         is_manual = self.is_manual(file_handle.name)
         if is_manual:
             self.block_list = [Block()]
-        elif self.contains_non_transactiona_keyword(file_handle):
+        elif self.contains_non_transactional_keyword(file_handle):
             self.block_list = [Block()]
         else:
             self.block_list = [SimpleBlock()]
@@ -120,7 +120,7 @@ class Script(object):
     def is_manual(self, file_name):
         return '/manual/' in file_name
 
-    def contains_non_transactiona_keyword(self, file_handle):
+    def contains_non_transactional_keyword(self, file_handle):
         keywords = getattr(
             settings, 'NORTH_NON_TRANSACTIONAL_KEYWORDS',
             ['CONCURRENTLY', 'ALTER TYPE'])
