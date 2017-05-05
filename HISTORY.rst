@@ -7,6 +7,7 @@ History
 ++++++++++++++++++
 
 - Do not fail if fixtures do not exist.
+- Add support of python3.
 
 
 0.1.3 (2017-04-18)
