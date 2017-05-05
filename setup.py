@@ -25,6 +25,7 @@ setup(
     install_requires=[
         "Django>=1.8,<1.11",
         "sqlparse",
+        "six",
     ],
     tests_require=["tox"],
     license="MIT",
