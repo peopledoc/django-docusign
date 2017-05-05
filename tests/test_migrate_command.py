@@ -133,6 +133,21 @@ def test_migrate_init_schema(settings, mocker):
     command = migrate.Command()
     command.verbosity = 2
 
+    # no fixtures
+    mocker.patch(
+        'django_north.management.migrations.get_version_for_init',
+        return_value='17.3')
+    del settings.NORTH_ADDITIONAL_SCHEMA_FILES
+    command.init_schema()
+    assert len(mock_run_script.call_args_list) == 1
+    assert mock_run_script.call_args_list[0] == mocker.call(
+        os.path.join(settings.NORTH_MIGRATIONS_ROOT, 'schemas',
+                     'schema_17.3.sql'))
+    assert stdout.getvalue() == (
+        'Load schema\n'
+        '  Applying 17.3...\n'
+    )
+
 
 def test_migrate_nomigration_plan(mocker):
     mock_run_script = mocker.patch(
