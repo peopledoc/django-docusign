@@ -296,7 +296,7 @@ def build_migration_plan():
         applied_migrations = get_applied_migrations(version)
         # get migrations to apply
         migrations_to_apply = get_migrations_to_apply(version)
-        migs = migrations_to_apply.keys()
+        migs = list(migrations_to_apply.keys())
         migs.sort()
         # build plan
         for mig in migs:
