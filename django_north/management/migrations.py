@@ -26,6 +26,16 @@ def is_version(vstring):
     return True
 
 
+def list_dirs(root):
+    return [d for d in os.listdir(root)
+            if os.path.isdir(os.path.join(root, d))]
+
+
+def list_files(root):
+    return [d for d in os.listdir(root)
+            if os.path.isfile(os.path.join(root, d))]
+
+
 class MigrationRecorder(DjangoMigrationRecorder):
     def record_applied(self, app, name):
         """
@@ -43,8 +53,8 @@ def get_known_versions():
     """
     # get all subfolders
     try:
-        dirs = os.walk(settings.NORTH_MIGRATIONS_ROOT).next()[1]
-    except StopIteration:
+        dirs = list_dirs(settings.NORTH_MIGRATIONS_ROOT)
+    except OSError:
         raise ImproperlyConfigured(
             'settings.NORTH_MIGRATIONS_ROOT is improperly configured.')
 
@@ -168,8 +178,8 @@ def get_migrations_to_apply(version):
 
     # list auto migrations
     try:
-        files = os.walk(version_root).next()[2]
-    except StopIteration:
+        files = list_files(version_root)
+    except OSError:
         raise DBException('No sql folder found for version {}.'.format(
             version))
     # filter files (keep *ddl.sql and *dml.sql)
@@ -181,8 +191,8 @@ def get_migrations_to_apply(version):
     # list manual migrations
     manual_root = os.path.join(version_root, 'manual')
     try:
-        files = os.walk(manual_root).next()[2]
-    except StopIteration:
+        files = list_files(manual_root)
+    except OSError:
         files = []
     # filter files (keep *ddl.sql and *dml.sql)
     auto_migrations = filter_migrations(files)
@@ -286,7 +296,7 @@ def build_migration_plan():
         applied_migrations = get_applied_migrations(version)
         # get migrations to apply
         migrations_to_apply = get_migrations_to_apply(version)
-        migs = migrations_to_apply.keys()
+        migs = list(migrations_to_apply.keys())
         migs.sort()
         # build plan
         for mig in migs:

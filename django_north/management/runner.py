@@ -2,6 +2,7 @@ import logging
 
 from django.conf import settings
 
+import six
 import sqlparse
 
 logger = logging.getLogger(__name__)
@@ -44,7 +45,8 @@ class Block(object):
     def run(self, connection):
         statements = sqlparse.parse(self.content)
 
-        if "".join((unicode(stmt) for stmt in statements)) != self.content:
+        content = "".join((six.text_type(stmt) for stmt in statements))
+        if content != self.content:
             raise SQLRunnerException("sqlparse failed to properly split input")
 
         rows = 0
