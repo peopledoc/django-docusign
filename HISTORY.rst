@@ -6,7 +6,7 @@ History
 0.1.4 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Do not fail if fixtures do not exist.
 
 
 0.1.3 (2017-04-18)
@@ -19,13 +19,13 @@ History
 0.1.2 (2017-04-13)
 ++++++++++++++++++
 
-- Use a Block if the sql file contains a CONCURRENTLY instruction
+- Use a Block if the sql file contains a CONCURRENTLY instruction.
 
 
 0.1.1 (2017-04-11)
 ++++++++++++++++++
 
-- Add the possibility to configure the current version detector
+- Add the possibility to configure the current version detector.
 
 
 0.1.0 (2017-03-28)
