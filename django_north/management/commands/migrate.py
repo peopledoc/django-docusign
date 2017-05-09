@@ -81,17 +81,20 @@ class Command(BaseCommand):
         self.run_script(schema_path)
 
         # load fixtures
-        fixtures_path = os.path.join(
-            settings.NORTH_MIGRATIONS_ROOT,
-            'fixtures',
-            getattr(settings, 'NORTH_FIXTURES_TPL',
-                    migrations.fixtures_default_tpl)
-            .format(init_version))
-        if os.path.exists(fixtures_path):
+        try:
+            fixtures_version = migrations.get_fixtures_for_init(init_version)
+            fixtures_path = os.path.join(
+                settings.NORTH_MIGRATIONS_ROOT,
+                'fixtures',
+                getattr(settings, 'NORTH_FIXTURES_TPL',
+                        migrations.fixtures_default_tpl)
+                .format(fixtures_version))
             if self.verbosity >= 1:
                 self.stdout.write(self.style.MIGRATE_LABEL("Load fixtures"))
-                self.stdout.write("  Applying {}...".format(init_version))
+                self.stdout.write("  Applying {}...".format(fixtures_version))
             self.run_script(fixtures_path)
+        except migrations.DBException:
+            pass
 
     def run_script(self, path):
         with io.open(path, 'r', encoding='utf8') as f:

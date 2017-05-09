@@ -299,3 +299,42 @@ def test_get_version_for_init(settings, mocker):
     settings.NORTH_SCHEMA_TPL = 'foo{}.sql'
     with pytest.raises(migrations.DBException, message=message):
         migrations.get_version_for_init()
+
+
+def test_get_fixtures_for_init(settings, mocker):
+    root = os.path.dirname(__file__)
+    settings.NORTH_MIGRATIONS_ROOT = os.path.join(root, 'test_data/sql')
+    mock_versions = mocker.patch(
+        'django_north.management.migrations.get_known_versions')
+
+    mock_versions.return_value = ['16.11', '16.12', '17.01', '17.02']
+
+    # target version is out of scope
+    message = (
+        "settings.NORTH_TARGET_VERSION is improperly configured: "
+        "version foo not found.")
+    with pytest.raises(ImproperlyConfigured, message=message):
+        migrations.get_fixtures_for_init('foo')
+
+    # fixtures for the version exists
+    assert migrations.get_fixtures_for_init('16.12') == '16.12'
+
+    # fixtures for the version does not exist, take the first ancestor
+    assert migrations.get_fixtures_for_init('17.01') == '16.12'
+
+    # no fixtures for the version, and no ancestors
+    message = "Can not find fixtures to init the DB."
+    with pytest.raises(migrations.DBException, message=message):
+        migrations.get_fixtures_for_init('16.11')
+
+    # no ancestors, but fixtures exists
+    mock_versions.return_value = ['16.12', '17.01', '17.02']
+    assert migrations.get_fixtures_for_init('17.01') == '16.12'
+
+    # wrong template
+    settings.NORTH_FIXTURES_TPL = 'foo.sql'
+    with pytest.raises(migrations.DBException, message=message):
+        migrations.get_fixtures_for_init('16.12')
+    settings.NORTH_FIXTURES_TPL = 'foo{}.sql'
+    with pytest.raises(migrations.DBException, message=message):
+        migrations.get_fixtures_for_init('16.12')

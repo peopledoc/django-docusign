@@ -203,16 +203,16 @@ def get_migrations_to_apply(version):
     return migrations
 
 
-def get_version_for_init():
+def get_closest_version(target_version, sql_tpl):
     """
-    Get the version to use to init a new DB to the current target verison.
+    Get the version of a file (schema or fixtures) to use to init a DB.
+    Take the closest to the target_version. Can be the same version, or older.
     """
     # get known versions
     known_versions = get_known_versions()
     # find target version
     try:
-        target_version_index = known_versions.index(
-            settings.NORTH_TARGET_VERSION)
+        target_version_index = known_versions.index(target_version)
     except ValueError:
         raise ImproperlyConfigured(
             'settings.NORTH_TARGET_VERSION is improperly configured: '
@@ -221,11 +221,7 @@ def get_version_for_init():
 
     def get_version(index):
         version = known_versions[index]
-        schema_path = os.path.join(
-            settings.NORTH_MIGRATIONS_ROOT,
-            'schemas',
-            getattr(settings, 'NORTH_SCHEMA_TPL', schema_default_tpl)
-            .format(version))
+        schema_path = sql_tpl.format(version)
         return version, schema_path
 
     while target_version_index > 0:
@@ -238,7 +234,38 @@ def get_version_for_init():
     if os.path.exists(path):
         return version
 
-    raise DBException('Can not find a schema to init the DB.')
+
+def get_version_for_init():
+    """
+    Get the version to use to init a new DB to the current target version.
+    """
+    version = get_closest_version(
+        settings.NORTH_TARGET_VERSION,
+        os.path.join(
+            settings.NORTH_MIGRATIONS_ROOT,
+            'schemas',
+            getattr(settings, 'NORTH_SCHEMA_TPL', schema_default_tpl)))
+
+    if version is None:
+        raise DBException('Can not find a schema to init the DB.')
+    return version
+
+
+def get_fixtures_for_init(target_version):
+    """
+    Get the closest fixtures to use to init a new DB
+    to the current target version.
+    """
+    version = get_closest_version(
+        target_version,
+        os.path.join(
+            settings.NORTH_MIGRATIONS_ROOT,
+            'fixtures',
+            getattr(settings, 'NORTH_FIXTURES_TPL', fixtures_default_tpl)))
+
+    if version is None:
+        raise DBException('Can not find fixtures to init the DB.')
+    return version
 
 
 def build_migration_plan():
