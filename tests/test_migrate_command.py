@@ -133,19 +133,41 @@ def test_migrate_init_schema(settings, mocker):
     command = migrate.Command()
     command.verbosity = 2
 
-    # no fixtures
+    # no fixtures for this version
     mocker.patch(
         'django_north.management.migrations.get_version_for_init',
         return_value='17.3')
     del settings.NORTH_ADDITIONAL_SCHEMA_FILES
     command.init_schema()
-    assert len(mock_run_script.call_args_list) == 1
+    assert len(mock_run_script.call_args_list) == 2
     assert mock_run_script.call_args_list[0] == mocker.call(
         os.path.join(settings.NORTH_MIGRATIONS_ROOT, 'schemas',
                      'schema_17.3.sql'))
     assert stdout.getvalue() == (
         'Load schema\n'
         '  Applying 17.3...\n'
+        'Load fixtures\n'
+        '  Applying 16.12...\n'
+    )
+
+    mock_run_script.reset_mock()
+    stdout = mocker.patch('sys.stdout', new_callable=StringIO)
+    command = migrate.Command()
+    command.verbosity = 2
+
+    # no fixtures
+    mocker.patch(
+        'django_north.management.migrations.get_version_for_init',
+        return_value='16.11')
+    del settings.NORTH_ADDITIONAL_SCHEMA_FILES
+    command.init_schema()
+    assert len(mock_run_script.call_args_list) == 1
+    assert mock_run_script.call_args_list[0] == mocker.call(
+        os.path.join(settings.NORTH_MIGRATIONS_ROOT, 'schemas',
+                     'schema_16.11.sql'))
+    assert stdout.getvalue() == (
+        'Load schema\n'
+        '  Applying 16.11...\n'
     )
 
 

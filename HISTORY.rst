@@ -7,6 +7,7 @@ History
 ++++++++++++++++++
 
 - Do not fail if fixtures do not exist.
+  Use the closest fixtures for DB init and flush command.
 - Add support of python3.
 
 

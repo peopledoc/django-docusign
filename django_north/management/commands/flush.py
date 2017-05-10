@@ -20,7 +20,8 @@ from django.db import transaction
 from django.utils import six
 from django.utils.six.moves import input
 
-from django_north.management.migrations import get_version_for_init
+from django_north.management.migrations import get_current_version
+from django_north.management.migrations import get_fixtures_for_init
 from django_north.management.migrations import fixtures_default_tpl
 from django_north.management.runner import Script
 
@@ -80,6 +81,8 @@ class Command(BaseCommand):
                 pass
 
         # custom: only_django False
+        # get current version before flush
+        current_version = get_current_version()
         sql_list = sql_flush(self.style, connection, only_django=False,
                              reset_sequences=reset_sequences,
                              allow_cascade=allow_cascade)
@@ -120,7 +123,8 @@ Are you sure you want to do this?
                     CommandError, CommandError(new_msg), sys.exc_info()[2])
 
             if not inhibit_post_migrate:
-                self.emit_post_migrate(verbosity, interactive, database)
+                self.emit_post_migrate(
+                    verbosity, interactive, database, current_version)
 
             # Reinstall the initial_data fixture.
             if options.get('load_initial_data'):
@@ -140,19 +144,19 @@ Are you sure you want to do this?
             self.stdout.write("Flush cancelled.\n")
 
     @staticmethod
-    def emit_post_migrate(verbosity, interactive, database):
+    def emit_post_migrate(verbosity, interactive, database, current_version):
         # custom: do what was done on post_migrate
         # clear contenttype cache
         ContentType.objects.clear_cache()
 
         # reload fixtures
         connection = connections[database]
-        init_version = get_version_for_init()
+        fixtures_version = get_fixtures_for_init(current_version)
         fixtures_path = os.path.join(
             settings.NORTH_MIGRATIONS_ROOT,
             'fixtures',
             getattr(settings, 'NORTH_FIXTURES_TPL', fixtures_default_tpl)
-            .format(init_version))
+            .format(fixtures_version))
         with io.open(fixtures_path, 'r', encoding='utf8') as f:
             script = Script(f)
             script.run(connection)

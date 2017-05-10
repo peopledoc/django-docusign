@@ -1,3 +1,4 @@
+from django.contrib.auth.models import Permission
 from django.test import TransactionTestCase
 
 from tests.north_app.models import Author
@@ -20,3 +21,11 @@ class BookTestCase(TransactionTestCase):
         self.book1.delete()
 
         self.assertEquals(self.author.book_set.count(), 1)
+
+    def test_permissions(self):
+        # test that the correct fixtures where loaded:
+        # schema inited in 0.1
+        # 'add_author' permission created in 1.0
+        # if the permission 'add_author' exists, it's ok
+        self.assertTrue(
+            Permission.objects.filter(codename='add_author').exists())
