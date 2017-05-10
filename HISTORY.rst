@@ -3,7 +3,7 @@
 History
 -------
 
-0.1.4 (unreleased)
+0.1.4 (2017-05-10)
 ++++++++++++++++++
 
 - Do not fail if fixtures do not exist.
