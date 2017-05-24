@@ -1,3 +1,6 @@
+from distutils.version import StrictVersion
+
+from django import get_version
 from django.contrib.auth.management import _get_all_permissions
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
@@ -26,9 +29,16 @@ def get_searched_permissions(ctypes):
     """
     # This will hold the permissions we're looking for as
     # (content_type, (codename, name))
+
+    def __get_all_permissions(options, ctype):
+        # django 1.10 compatibility
+        if StrictVersion(get_version()) < StrictVersion('1.10'):
+            return _get_all_permissions(options, ctype)
+        return _get_all_permissions(options)
+
     searched_perms = list()
     for ctype, klass in ctypes:
-        for perm in _get_all_permissions(klass._meta, ctype):
+        for perm in __get_all_permissions(klass._meta, ctype):
             searched_perms.append((ctype, perm))
 
     return searched_perms

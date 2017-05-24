@@ -6,7 +6,7 @@ History
 0.1.5 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Fix showfixtures command for Django 1.10
 
 
 0.1.4 (2017-05-10)
