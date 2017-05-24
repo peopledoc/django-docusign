@@ -4,6 +4,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.management import call_command
 from django.utils.six import StringIO
 
+import pytest
+
 from django_north.management.commands import showfixtures
 
 
@@ -150,3 +152,10 @@ def test_showfixtures(mocker):
         'DELETE 1\nDELETE 2\nDELETE 3\n'
         'INSERT 1\nINSERT 2\nINSERT 3\n'
         'INSERT 4\nINSERT 5\nINSERT 6\n')
+
+
+@pytest.mark.django_db
+def test_showfixtures_for_real(mocker):
+    stdout = mocker.patch('sys.stdout', new_callable=StringIO)
+    call_command('showfixtures', unknown_contenttypes=True)
+    assert stdout.getvalue() == '\n'
