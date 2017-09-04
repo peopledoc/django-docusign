@@ -9,6 +9,7 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 ----------------
 
 - Feature #74 - Drop callback support.
+- Confirm compatibility with Django 1.11
 
 
 2.1 (2017-03-25)

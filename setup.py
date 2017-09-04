@@ -47,6 +47,10 @@ CLASSIFIERS = [
     'Programming Language :: Python :: 3.4',
     'Programming Language :: Python :: 3.5',
     'Framework :: Django',
+    'Framework :: Django :: 1.8',
+    'Framework :: Django :: 1.9',
+    'Framework :: Django :: 1.10',
+    'Framework :: Django :: 1.11',
 ]
 KEYWORDS = [
     'docusign',
@@ -57,8 +61,8 @@ KEYWORDS = [
 ]
 PACKAGES = [NAME.replace('-', '_')]
 REQUIREMENTS = [
-    'Django>=1.8,<1.11',
-    'django-anysign>=1.0',
+    'Django>=1.8,<2.0',
+    'django-anysign>=1.0,<2.0',
     'pydocusign>=2.0,<3.0',
     'setuptools',
 ]
