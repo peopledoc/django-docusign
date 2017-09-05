@@ -59,7 +59,7 @@ PACKAGES = [NAME.replace('-', '_')]
 REQUIREMENTS = [
     'Django>=1.8,<1.11',
     'django-anysign>=1.0',
-    'pydocusign>=1.0,<2.0',
+    'pydocusign>=2.0,<3.0',
     'setuptools',
 ]
 ENTRY_POINTS = {}
