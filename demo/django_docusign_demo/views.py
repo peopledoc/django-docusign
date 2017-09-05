@@ -23,7 +23,7 @@ def docusign_settings(request):
     """
     data = {}
     for key in ['root_url', 'username', 'password', 'integrator_key',
-                'timeout', 'use_callback']:
+                'timeout']:
         try:
             data[key] = request.session[key]
         except KeyError:
@@ -77,13 +77,6 @@ class CreateSignatureView(FormView):
         """Return home URL."""
         return reverse('home')
 
-    def get_form_kwargs(self):
-        kwargs = super(CreateSignatureView, self).get_form_kwargs()
-        kwargs.update({
-            'use_callback': self.signature_backend.use_callback
-        })
-        return kwargs
-
     def form_valid(self, form):
         """Create envelope on DocuSign's side."""
         self.cleaned_data = form.cleaned_data
@@ -126,13 +119,9 @@ class CreateSignatureView(FormView):
 
     def create_signature(self, signature):
         """Create signature backend-side."""
-        params = {}
-        if self.signature_backend.use_callback:
-            params['callback_url'] = self.cleaned_data['callback_url']
         self.signature_backend.create_signature(
             signature,
             subject=signature.document_title,
-            **params
         )
 
 
@@ -202,11 +191,6 @@ class SignerReturnView(django_docusign.SignerReturnView):
         )
         return signature_backend
 
-    def get_signer_return_with_callback_url(self):
-        """Url redirect when callbacks are enabled."""
-        return reverse('anysign:signer_return_with_callback',
-                       args=[self.kwargs[self.pk_url_kwarg]])
-
     def get_signer_canceled_url(self, event, status):
         """Url redirect when signer canceled signature."""
         return reverse('anysign:signer_canceled',
@@ -254,10 +238,6 @@ class SignerReturnView(django_docusign.SignerReturnView):
                                      save=True)
 
 
-class SignerReturnWithCallbackView(TemplateView):
-    template_name = 'signer_return.html'
-
-
 class SignerCanceledView(TemplateView):
     template_name = 'signer_canceled.html'
 
@@ -272,38 +252,3 @@ class SignerDeclinedView(TemplateView):
 
 class SignerSignedView(TemplateView):
     template_name = 'signer_signed.html'
-
-
-class SignatureCallbackView(django_docusign.SignatureCallbackView):
-    def get_signature_backend(self):
-        """Return signature backend instance."""
-        backend_settings = docusign_settings(self.request)
-        signature_backend = django_anysign.get_signature_backend(
-            'docusign',
-            **backend_settings
-        )
-        return signature_backend
-
-    def update_signer(self, signer_id, status, status_datetime=None,
-                      message=u''):
-        signer = django_anysign.get_signer_model().objects.get(pk=signer_id)
-        signer.status = status
-        signer.status_datetime = status_datetime or now()
-        signer.status_details = message
-        signer.save()
-
-    def update_signature(self, status, status_datetime=None):
-        self.signature.status = status
-        self.signature.save()
-        if status == 'completed' or not self.signature.document:
-            document = next(self.signature_backend.get_docusign_documents(
-                self.signature))  # In our model, there is only one doc.
-            # Replace old document by signed one.
-            filename = self.signature.document.name
-            if not filename:
-                filename = "%s.pdf" % slugify(
-                    self.signature.document_title)
-            self.signature.document.delete(save=False)
-            self.signature.document.save(filename,
-                                         ContentFile(document.read()),
-                                         save=True)

@@ -36,7 +36,7 @@ master_doc = 'index'
 # General information about the project.
 project = u'django-docusign'
 project_slug = re.sub(r'([\W_.-]+)', u'-', project)
-copyright = u'2014-2016 - PeopleDoc'
+copyright = u'2014-2017 - PeopleDoc'
 author = u'Benoît Bryon'
 author_slug = re.sub(r'([\W_.-]+)', u'-', author)
 
@@ -94,8 +94,8 @@ intersphinx_mapping = {
         'http://docs.python.org/2.7',
         None),
     'django': (
-        'https://docs.djangoproject.com/en/1.6/',
-        'https://docs.djangoproject.com/en/1.6/_objects/'),
+        'https://docs.djangoproject.com/en/1.10/',
+        'https://docs.djangoproject.com/en/1.10/_objects/'),
     'pydocusign': (
         'https://pydocusign.readthedocs.org/en/latest/',
         None),
