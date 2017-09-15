@@ -1,21 +1,55 @@
+sudo: false
 language: python
-env:
-  matrix:
-  - TOXENV=py27-django18
-  - TOXENV=py27-django19
-  - TOXENV=py27-django110
-  - TOXENV=py27-django111
-  - TOXENV=py34-django18
-  - TOXENV=py34-django19
-  - TOXENV=py34-django110
-  - TOXENV=py34-django111
-  - TOXENV=py35-django18
-  - TOXENV=py35-django19
-  - TOXENV=py35-django110
-  - TOXENV=py35-django111
-  - TOXENV=flake8
-  - TOXENV=readme
+matrix:
+  include:
+    # Python version is just for the look on travis.
+    - python: 2.7
+      env: TOXENV=flake8
+
+    - python: 2.7
+      env: TOXENV=sphinx
+
+    - python: 2.7
+      env: TOXENV=readme
+
+    - python: 2.7
+      env: TOXENV=py27-django18
+
+    - python: 2.7
+      env: TOXENV=py27-django19
+
+    - python: 2.7
+      env: TOXENV=py27-django110
+
+    - python: 2.7
+      env: TOXENV=py27-django111
+
+    - python: 3.4
+      env: TOXENV=py34-django18
+
+    - python: 3.4
+      env: TOXENV=py34-django19
+
+    - python: 3.4
+      env: TOXENV=py34-django110
+
+    - python: 3.4
+      env: TOXENV=py34-django111
+
+    - python: 3.5
+      env: TOXENV=py35-django18
+
+    - python: 3.5
+      env: TOXENV=py35-django19
+
+    - python: 3.5
+      env: TOXENV=py35-django110
+
+    - python: 3.5
+      env: TOXENV=py35-django111
+
 install:
-- make develop
+  - make develop
+
 script:
-- make test
+  - make test
