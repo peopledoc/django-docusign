@@ -1,18 +1,22 @@
 """Demo views for `django-docusign`."""
+from __future__ import unicode_literals
+
 import os
 
 from django.core.files.base import ContentFile
-from django.core.urlresolvers import reverse
-from django.views.generic import FormView, TemplateView, RedirectView
-from django.views.generic.detail import SingleObjectMixin
 from django.utils.text import slugify
 from django.utils.timezone import now
-
+from django.views.generic import FormView, RedirectView, TemplateView
+from django.views.generic.detail import SingleObjectMixin
 from django_anysign import api as django_anysign
 from django_docusign import api as django_docusign
 
-from django_docusign_demo import forms
-from django_docusign_demo import models
+from django_docusign_demo import forms, models
+
+try:
+    from django.urls import reverse
+except ImportError:
+    from django.core.urlresolvers import reverse
 
 
 def docusign_settings(request):
@@ -211,7 +215,7 @@ class SignerReturnView(django_docusign.SignerReturnView):
         return reverse('anysign:signer_signed',
                        args=[self.kwargs[self.pk_url_kwarg]])
 
-    def update_signer(self, status, message=u''):
+    def update_signer(self, status, message=''):
         """Update ``signer`` with ``status``.
         Additional ``status_datetime`` argument is the datetime mentioned by
         DocuSign.

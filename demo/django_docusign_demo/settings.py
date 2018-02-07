@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Django settings for django-docusign demo project."""
-import os
-from django.conf.global_settings import MIDDLEWARE_CLASSES
+from __future__ import unicode_literals
 
+import os
 
 # Configure some relative directories.
 demoproject_dir = os.path.dirname(os.path.abspath(__file__))
@@ -44,11 +44,19 @@ MEDIA_URL = '/media/'
 STATIC_ROOT = os.path.join(data_dir, 'static')
 STATIC_URL = '/static/'
 
-MIDDLEWARE_CLASSES += (
+MIDDLEWARE_CLASSES = [
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-)
+]
+
+MIDDLEWARE = [
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+]
 
 # Applications.
 INSTALLED_APPS = (

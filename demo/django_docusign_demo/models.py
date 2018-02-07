@@ -1,6 +1,7 @@
+from __future__ import unicode_literals
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-
 from django_anysign import api as django_anysign
 
 
@@ -23,7 +24,7 @@ class Signature(django_anysign.SignatureFactory(SignatureType)):
         _('title'),
         max_length=100,
         blank=True,
-        default=u'',
+        default='',
     )
     status = models.CharField(
         _('status'),
