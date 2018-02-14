@@ -242,3 +242,9 @@ class DocuSignBackend(django_anysign.SignatureBackend):
             recipient=docusign_signer,
             returnUrl=signer_return_url
         )
+
+    def get_page_image(self, signature, document_id, page_no, dpi=None,
+                       max_width=None, max_height=None):
+        envelope_id = signature.signature_backend_id
+        return self.docusign_client.get_page_image(
+            envelope_id, document_id, page_no, dpi, max_width, max_height)
