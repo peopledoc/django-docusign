@@ -8,7 +8,7 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 3.2 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Project repository moved to peopledoc organization (was novafloss).
 
 
 3.1 (2017-09-20)
@@ -21,6 +21,7 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 ----------------
 
 - Feature #74 - Drop callback support.
+
 - Confirm compatibility with Django 1.11
 
 
@@ -204,4 +205,4 @@ Initial release.
 
 .. target-notes::
 
-.. _`milestones`: https://github.com/novafloss/django-docusign/milestones
+.. _`milestones`: https://github.com/peopledoc/django-docusign/milestones
