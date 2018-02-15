@@ -419,3 +419,14 @@ class DocuSignBackendTestCase(unittest.TestCase):
             backend = django_docusign.DocuSignBackend(**explicit_options)
         for key, value in explicit_options.items():
             self.assertEqual(getattr(backend.docusign_client, key), value)
+
+    @mock.patch('pydocusign.DocuSignClient.get_page_image')
+    def test_get_page_image(self, mock_get_page_image):
+        backend = django_docusign.DocuSignBackend()
+
+        signature = mock.Mock()
+        signature.signature_backend_id = 999
+
+        backend.get_page_image(signature, 1, 1, 72, 300)
+
+        mock_get_page_image.assert_called_once_with(999, 1, 1, 72, 300, None)
