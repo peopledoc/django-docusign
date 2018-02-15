@@ -95,10 +95,10 @@ get the setup. Here is an example to run the tests:
 
 .. target-notes::
 
-.. _`django-docusign bugtracker`: https://github.com/novafloss/django-docusign/issues
+.. _`django-docusign bugtracker`: https://github.com/peopledoc/django-docusign/issues
 .. _`rebase`: http://git-scm.com/book/en/Git-Branching-Rebasing
 .. _`merge-based rebase`: http://tech.novapost.fr/psycho-rebasing-en.html
-.. _`pip`: https://pypi.python.org/pypi/pip/
-.. _`tox`: https://pypi.python.org/pypi/tox/
-.. _`Sphinx`: https://pypi.python.org/pypi/Sphinx/
-.. _`zest.releaser`: https://pypi.python.org/pypi/zest.releaser/
+.. _`pip`: https://pypi.org/project/pip/
+.. _`tox`: https://pypi.org/project/tox/
+.. _`Sphinx`: https://pypi.org/project/Sphinx/
+.. _`zest.releaser`: https://pypi.org/project/zest.releaser/

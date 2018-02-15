@@ -28,22 +28,22 @@ Resources
 *********
 
 * Documentation: https://django-docusign.readthedocs.org
-* PyPI page: https://pypi.python.org/pypi/django-docusign/
-* Bugtracker: https://github.com/novafloss/django-docusign/issues
+* PyPI page: https://pypi.org/project/django-docusign/
+* Bugtracker: https://github.com/peopledoc/django-docusign/issues
 * Changelog: https://django-docusign.readthedocs.org/en/latest/about/changelog.html
-* Code repository: https://github.com/novafloss/django-docusign
-* Continuous integration: https://travis-ci.org/novafloss/django-docusign
+* Code repository: https://github.com/peopledoc/django-docusign
+* Continuous integration: https://travis-ci.org/peopledoc/django-docusign
 
 .. _`DocuSign`: https://www.docusign.com/
-.. _`pydocusign`: https://pypi.python.org/pypi/pydocusign/
-.. _`django-anysign`: https://pypi.python.org/pypi/django-anysign/
+.. _`pydocusign`: https://pypi.org/project/pydocusign/
+.. _`django-anysign`: https://pypi.org/project/django-anysign/
 
 
-.. |Build Status| image:: https://travis-ci.org/novafloss/django-docusign.svg?branch=master
-    :target: https://travis-ci.org/novafloss/django-docusign
+.. |Build Status| image:: https://travis-ci.org/peopledoc/django-docusign.svg?branch=master
+    :target: https://travis-ci.org/peopledoc/django-docusign
 
 .. |Documentation Status| image:: https://readthedocs.org/projects/django-docusign/badge/
     :target: http://django-docusign.readthedocs.io/en/latest/
 
 .. |Pypi Status| image:: https://img.shields.io/pypi/v/django-docusign.svg
-    :target: https://pypi.python.org/pypi/django-docusign
+    :target: https://pypi.org/project/django-docusign

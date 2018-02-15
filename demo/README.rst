@@ -20,4 +20,4 @@ details about development environment setup.
 .. target-notes::
 
 .. _`demo folder in project's repository`:
-   https://github.com/novafloss/django-docusign/tree/master/demo/
+   https://github.com/peopledoc/django-docusign/tree/master/demo/

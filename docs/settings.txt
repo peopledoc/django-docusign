@@ -66,6 +66,6 @@ Here are available settings:
 
 .. target-notes::
 
-.. _`django-anysign`: https://pypi.python.org/pypi/django-anysign
+.. _`django-anysign`: https://pypi.org/project/django-anysign
 .. _`settings.ANYSIGN`:
    https://django-anysign.readthedocs.org/en/latest/settings.html

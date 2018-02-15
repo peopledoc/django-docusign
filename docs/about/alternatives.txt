@@ -36,5 +36,5 @@ django-anysign
 .. target-notes::
 
 .. _`DocuSign`: https://www.docusign.com/
-.. _`pydocusign`: https://pypi.python.org/pypi/pydocusign/
-.. _`django-anysign`: https://pypi.python.org/pypi/django-anysign/
+.. _`pydocusign`: https://pypi.org/project/pydocusign/
+.. _`django-anysign`: https://pypi.org/project/django-anysign/
