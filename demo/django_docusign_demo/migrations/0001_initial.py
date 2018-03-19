@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 import uuid
 
-from django.db import models, migrations
+import django.db.models.deletion
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
@@ -51,7 +53,7 @@ class Migration(migrations.Migration):
                 ('status', models.CharField(default=b'draft', max_length=50, verbose_name='status', db_index=True, choices=[(b'draft', 'draft'), (b'sent', 'sent'), (b'delivered', 'delivered'), (b'completed', 'completed'), (b'declined', 'declined')])),
                 ('status_datetime', models.DateTimeField(auto_now_add=True, verbose_name='status datetime')),
                 ('status_details', models.CharField(max_length=250, verbose_name='status details', blank=True)),
-                ('signature', models.ForeignKey(related_name='signers', to='django_docusign_demo.Signature')),
+                ('signature', models.ForeignKey(related_name='signers', on_delete=django.db.models.deletion.CASCADE, to='django_docusign_demo.Signature')),
             ],
             options={
                 'abstract': False,
@@ -61,7 +63,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='signature',
             name='signature_type',
-            field=models.ForeignKey(verbose_name='signature type', to='django_docusign_demo.SignatureType'),
+            field=models.ForeignKey(verbose_name='signature type', on_delete=django.db.models.deletion.CASCADE, to='django_docusign_demo.SignatureType'),
             preserve_default=True,
         ),
     ]

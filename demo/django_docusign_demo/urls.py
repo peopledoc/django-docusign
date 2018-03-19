@@ -1,9 +1,13 @@
+from __future__ import unicode_literals
+
+from distutils.version import StrictVersion
+
+import django
 from django.conf import settings
-from django.conf.urls import url, include
+from django.conf.urls import include, url
 from django.conf.urls.static import static
 
 from django_docusign_demo import views
-
 
 home_view = views.HomeView.as_view()
 settings_view = views.SettingsView.as_view()
@@ -17,38 +21,39 @@ signer_declined_view = views.SignerDeclinedView.as_view()
 signer_signed_view = views.SignerSignedView.as_view()
 
 
+anysign_patterns = [
+    url(r'^signer/(?P<pk>\d+)/$', signer_view, name='signer'),
+    url(r'^signer/(?P<pk>\d+)/return/$',
+        signer_return_view,
+        name='signer_return'),
+    url(r'^signer/(?P<pk>\d+)/canceled/$',
+        signer_canceled_view,
+        name='signer_canceled'),
+    url(r'^signer/(?P<pk>\d+)/error/$',
+        signer_error_view,
+        name='signer_error'),
+    url(r'^signer/(?P<pk>\d+)/declined/$',
+        signer_declined_view,
+        name='signer_declined'),
+    url(r'^signer/(?P<pk>\d+)/signed/$',
+        signer_signed_view,
+        name='signer_signed'),
+]
+
+if StrictVersion(django.get_version()) >= StrictVersion('1.10'):
+    anysign_patterns = (anysign_patterns, 'anysign')
+
+
 urlpatterns = [
     url(r'^$', home_view, name='home'),
     url(r'^settings/$', settings_view, name='settings'),
     url(r'^signature/add/$', create_signature_view, name='create_signature'),
     url(r'^signature/add/template/$', create_signature_template_view,
         name='create_signature_template'),
-    url(
-        r'',
-        include(
-            [
-                url(r'^signer/(?P<pk>\d+)/$', signer_view, name='signer'),
-                url(r'^signer/(?P<pk>\d+)/return/$',
-                    signer_return_view,
-                    name='signer_return'),
-                url(r'^signer/(?P<pk>\d+)/canceled/$',
-                    signer_canceled_view,
-                    name='signer_canceled'),
-                url(r'^signer/(?P<pk>\d+)/error/$',
-                    signer_error_view,
-                    name='signer_error'),
-                url(r'^signer/(?P<pk>\d+)/declined/$',
-                    signer_declined_view,
-                    name='signer_declined'),
-                url(r'^signer/(?P<pk>\d+)/signed/$',
-                    signer_signed_view,
-                    name='signer_signed'),
-            ],
-            namespace='anysign',
-            app_name='anysign',
-        ),
-    ),
+
+    url(r'', include(anysign_patterns, namespace='anysign')),
 ]
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL,

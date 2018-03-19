@@ -1,7 +1,8 @@
+from __future__ import unicode_literals
+
 from django.db import transaction
 from django.views.generic.base import RedirectView
 from django.views.generic.detail import SingleObjectMixin
-
 from django_anysign import api as django_anysign
 
 
@@ -117,7 +118,7 @@ class SignerReturnView(SingleObjectMixin, RedirectView):
         """Handle 'declined' status ."""
         self.update_signature(status='declined')
 
-    def update_signer(self, status, message=u''):
+    def update_signer(self, status, message=''):
         """Update ``signer`` with ``status``."""
         raise NotImplementedError()
 

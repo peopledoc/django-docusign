@@ -1,6 +1,7 @@
-from django.conf import settings
+from __future__ import unicode_literals
 
 import pydocusign
+from django.conf import settings
 from django_anysign import api as django_anysign
 
 
@@ -148,7 +149,7 @@ class DocuSignBackend(django_anysign.SignatureBackend):
                                .get_envelope_document(envelope_id, document_id)
                 yield document
 
-    def create_signature_from_document(self, signature, subject=u'', blurb=u'',
+    def create_signature_from_document(self, signature, subject='', blurb='',
                                        sobo_email=None, **env_params):
         """Register ``signature`` in DocuSign service, for a signature from
         document.
@@ -183,7 +184,7 @@ class DocuSignBackend(django_anysign.SignatureBackend):
                                   .create_envelope_from_documents(envelope)
         return envelope
 
-    def create_signature_from_template(self, signature, subject=u'', blurb=u'',
+    def create_signature_from_template(self, signature, subject='', blurb='',
                                        sobo_email=None, **env_params):
         """Register ``signature`` in DocuSign service, for a signature from
         document.
@@ -205,7 +206,7 @@ class DocuSignBackend(django_anysign.SignatureBackend):
                                   .create_envelope_from_template(envelope)
         return envelope
 
-    def create_signature(self, signature, subject=u'', blurb=u'',
+    def create_signature(self, signature, subject='', blurb='',
                          sobo_email=None, **env_params):
         """Register ``signature`` in DocuSign service, return updated object.
 

@@ -6,9 +6,10 @@ Created by diecutter on .
 This file is execfile()d with the current directory set to its containing dir.
 
 """
+from __future__ import unicode_literals
+
 import os
 import re
-
 
 doc_dir = os.path.dirname(os.path.abspath(__file__))
 project_dir = os.path.dirname(doc_dir)
@@ -34,11 +35,11 @@ source_suffix = '.txt'
 master_doc = 'index'
 
 # General information about the project.
-project = u'django-docusign'
-project_slug = re.sub(r'([\W_.-]+)', u'-', project)
-copyright = u'2014-2017 - PeopleDoc'
-author = u'Benoît Bryon'
-author_slug = re.sub(r'([\W_.-]+)', u'-', author)
+project = 'django-docusign'
+project_slug = re.sub(r'([\W_.-]+)', '-', project)
+copyright = '2014-2017 - PeopleDoc'
+author = 'Benoît Bryon'
+author_slug = re.sub(r'([\W_.-]+)', '-', author)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -84,7 +85,7 @@ html_sidebars = {
 }
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = u'{project}doc'.format(project=project_slug)
+htmlhelp_basename = '{project}doc'.format(project=project_slug)
 
 
 # -- Options for sphinx.ext.intersphinx ---------------------------------------
@@ -113,8 +114,8 @@ latex_elements = {}
 # [howto/manual]).
 latex_documents = [
     ('index',
-     u'{project}.tex'.format(project=project_slug),
-     u'{project} Documentation'.format(project=project),
+     '{project}.tex'.format(project=project_slug),
+     '{project} Documentation'.format(project=project),
      author,
      'manual'),
 ]
@@ -127,7 +128,7 @@ latex_documents = [
 man_pages = [
     ('index',
      project,
-     u'{project} Documentation'.format(project=project),
+     '{project} Documentation'.format(project=project),
      [author],
      1)
 ]
@@ -141,7 +142,7 @@ man_pages = [
 texinfo_documents = [
     ('index',
      project_slug,
-     u'{project} Documentation'.format(project=project),
+     '{project} Documentation'.format(project=project),
      author,
      project,
      'One line description of project.',

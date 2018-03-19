@@ -1,20 +1,26 @@
 # coding=utf8
-from contextlib import contextmanager
+from __future__ import unicode_literals
+
 import os
 import unittest
 import uuid
+from contextlib import contextmanager
+
+import django.test
+from django.test.utils import override_settings
+from django_docusign import api as django_docusign
+
+from django_docusign_demo import models, views
+
 try:
     from unittest import mock
 except ImportError:  # Python 2 fallback.
     import mock
 
-from django.core.urlresolvers import reverse
-import django.test
-from django.test.utils import override_settings
-
-from django_docusign import api as django_docusign
-
-from django_docusign_demo import models, views
+try:
+    from django.urls import reverse
+except ImportError:
+    from django.core.urlresolvers import reverse
 
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -96,15 +102,15 @@ class SignatureFunctionalTestCase(django.test.TestCase):
         filepath = os.path.join(fixtures_dir, 'test.pdf')
         with open(filepath, 'rb') as document_file:
             data = {
-                'signers-TOTAL_FORMS': u'2',
-                'signers-INITIAL_FORMS': u'0',
-                'signers-MAX_NUM_FORMS': u'1000',
-                'signers-0-name': u'John Accentué',
-                'signers-0-email': u'john@example.com',
-                'signers-1-name': u'Paul Doe',
-                'signers-1-email': u'paul@example.com',
+                'signers-TOTAL_FORMS': '2',
+                'signers-INITIAL_FORMS': '0',
+                'signers-MAX_NUM_FORMS': '1000',
+                'signers-0-name': 'John Accentué',
+                'signers-0-email': 'john@example.com',
+                'signers-1-name': 'Paul Doe',
+                'signers-1-email': 'paul@example.com',
                 'document': document_file,
-                'title': u'A very simple PDF document',
+                'title': 'A very simple PDF document',
             }
             response = self.client.post(url, data)
         self.assertEqual(response.status_code, 302)
@@ -257,7 +263,7 @@ class SignatureFunctionalTestCase(django.test.TestCase):
             'signers': [
                 {'status': 'declined',
                  'clientUserId': str(signer.pk),
-                 'declinedReason': u'Jeg ønsker ikke\nå signere.'}
+                 'declinedReason': 'Jeg ønsker ikke\nå signere.'}
             ]
         }
 
@@ -272,7 +278,7 @@ class SignatureFunctionalTestCase(django.test.TestCase):
         signer.refresh_from_db()
         self.assertEqual(signature.status, 'declined')
         self.assertEqual(signer.status, 'declined')
-        self.assertEqual(signer.status_details, u'Jeg ønsker ikke\nå signere.')
+        self.assertEqual(signer.status_details, 'Jeg ønsker ikke\nå signere.')
 
     @mock.patch('pydocusign.DocuSignClient.get_envelope_recipients')
     def test_signer_all_signed(self, mock_recipients):
@@ -340,15 +346,15 @@ class SignatureTemplateFunctionalTestCase(SignatureFunctionalTestCase):
         # must be defined in environment variable DOCUSIGN_TEST_TEMPLATE_ID
         template_id = response.context['form'].initial['template_id']
         data = {
-            'signers-TOTAL_FORMS': u'2',
-            'signers-INITIAL_FORMS': u'0',
-            'signers-MAX_NUM_FORMS': u'1000',
-            'signers-0-name': u'John Accentué',
-            'signers-0-email': u'john@example.com',
-            'signers-1-name': u'Paul Doe',
-            'signers-1-email': u'paul@example.com',
+            'signers-TOTAL_FORMS': '2',
+            'signers-INITIAL_FORMS': '0',
+            'signers-MAX_NUM_FORMS': '1000',
+            'signers-0-name': 'John Accentué',
+            'signers-0-email': 'john@example.com',
+            'signers-1-name': 'Paul Doe',
+            'signers-1-email': 'paul@example.com',
             'template_id': template_id,
-            'title': u'A very simple PDF document',
+            'title': 'A very simple PDF document',
         }
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, 302)

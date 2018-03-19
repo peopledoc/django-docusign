@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Python packaging."""
+from __future__ import unicode_literals
+
 import os
 import sys
 
 from setuptools import setup
-
-
-# Tox integration.
 from setuptools.command.test import test as TestCommand
 
 
@@ -34,8 +33,8 @@ NAME = 'django-docusign'
 DESCRIPTION = 'Django application for DocuSign signature SAAS platform.'
 README = open(os.path.join(here, 'README.rst')).read()
 VERSION = open(os.path.join(here, 'VERSION')).read().strip()
-AUTHOR = u'Benoît Bryon'
-EMAIL = u'novafloss@people-doc.com'
+AUTHOR = 'Benoît Bryon'
+EMAIL = 'novafloss@people-doc.com'
 LICENSE = 'BSD'
 URL = 'https://{name}.readthedocs.io/'.format(name=NAME)
 CLASSIFIERS = [
@@ -46,11 +45,13 @@ CLASSIFIERS = [
     'Programming Language :: Python :: 3',
     'Programming Language :: Python :: 3.4',
     'Programming Language :: Python :: 3.5',
+    'Programming Language :: Python :: 3.6',
     'Framework :: Django',
     'Framework :: Django :: 1.8',
     'Framework :: Django :: 1.9',
     'Framework :: Django :: 1.10',
     'Framework :: Django :: 1.11',
+    'Framework :: Django :: 2.0',
 ]
 KEYWORDS = [
     'docusign',
@@ -61,7 +62,7 @@ KEYWORDS = [
 ]
 PACKAGES = [NAME.replace('-', '_')]
 REQUIREMENTS = [
-    'Django>=1.8,<2.0',
+    'Django>=1.8',
     'django-anysign>=1.2,<2.0',
     'pydocusign>=2.2,<3.0',
     'setuptools',

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """Python packaging."""
+from __future__ import unicode_literals
+
 import os
 
 from setuptools import setup
-
 
 here = os.path.abspath(os.path.dirname(__file__))
 project_root = os.path.dirname(here)
@@ -13,8 +14,8 @@ NAME = 'django-docusign-demo'
 DESCRIPTION = ''
 README = open(os.path.join(here, 'README.rst')).read()
 VERSION = open(os.path.join(project_root, 'VERSION')).read().strip()
-AUTHOR = u'Benoît Bryon'
-EMAIL = u'novafloss@people-doc.com'
+AUTHOR = 'Benoît Bryon'
+EMAIL = 'novafloss@people-doc.com'
 URL = ''
 CLASSIFIERS = [
     'Development Status :: 5 - Production/Stable',
@@ -24,6 +25,7 @@ CLASSIFIERS = [
     'Programming Language :: Python :: 3',
     'Programming Language :: Python :: 3.4',
     'Programming Language :: Python :: 3.5',
+    'Programming Language :: Python :: 3.6',
     'Framework :: Django']
 KEYWORDS = []
 PACKAGES = ['django_docusign_demo']
