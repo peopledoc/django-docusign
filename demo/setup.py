@@ -31,7 +31,6 @@ KEYWORDS = []
 PACKAGES = ['django_docusign_demo']
 REQUIREMENTS = [
     'django-docusign',
-    'django-formsetfield',
     'django-nose',
     'setuptools',
 ]
