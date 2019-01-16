@@ -97,7 +97,7 @@ get the setup. Here is an example to run the tests:
 
 .. _`django-docusign bugtracker`: https://github.com/peopledoc/django-docusign/issues
 .. _`rebase`: http://git-scm.com/book/en/Git-Branching-Rebasing
-.. _`merge-based rebase`: http://tech.novapost.fr/psycho-rebasing-en.html
+.. _`merge-based rebase`: http://tech.novapost.fr/psycho-rebasing.html
 .. _`pip`: https://pypi.org/project/pip/
 .. _`tox`: https://pypi.org/project/tox/
 .. _`Sphinx`: https://pypi.org/project/Sphinx/
