@@ -64,8 +64,6 @@ INSTALLED_APPS = (
     'django_docusign_demo',
     'django_docusign',
     'django_anysign',
-    # Third-parties.
-    'formsetfield',
     # Standard Django applications.
     'django.contrib.auth',
     'django.contrib.contenttypes',
