@@ -5,7 +5,7 @@ This document describes changes between each past release. For information
 about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 
-3.3 (unreleased)
+3.3 (2019-04-05)
 ----------------
 
 - Add support for Django 2.1
