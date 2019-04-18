@@ -8,47 +8,20 @@ matrix:
     - python: 3.6
       env: TOXENV=flake8
 
-    - python: 2.7
+    - python: 3.6
       env: TOXENV=sphinx
 
-    - python: 2.7
+    - python: 3.6
       env: TOXENV=readme
 
     - python: 2.7
-      env: TOXENV=py27-django18
-
-    - python: 2.7
-      env: TOXENV=py27-django19
-
-    - python: 2.7
-      env: TOXENV=py27-django110
-
-    - python: 2.7
       env: TOXENV=py27-django111
-
-    - python: 3.4
-      env: TOXENV=py34-django18
-
-    - python: 3.4
-      env: TOXENV=py34-django19
-
-    - python: 3.4
-      env: TOXENV=py34-django110
 
     - python: 3.4
       env: TOXENV=py34-django111
 
     - python: 3.4
       env: TOXENV=py34-django20
-
-    - python: 3.5
-      env: TOXENV=py35-django18
-
-    - python: 3.5
-      env: TOXENV=py35-django19
-
-    - python: 3.5
-      env: TOXENV=py35-django110
 
     - python: 3.5
       env: TOXENV=py35-django111
@@ -76,6 +49,9 @@ matrix:
 
     - python: 3.7
       env: TOXENV=py37-django20
+
+    - python: 3.7
+      env: TOXENV=py37-django111
 
     - python: 3.7
       env: TOXENV=py37-django21
