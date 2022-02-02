@@ -4,7 +4,7 @@ from distutils.version import StrictVersion
 
 import django
 from django.conf import settings
-from django.conf.urls import include, url
+from django.urls import include, path
 from django.conf.urls.static import static
 
 from django_docusign_demo import views
@@ -22,20 +22,20 @@ signer_signed_view = views.SignerSignedView.as_view()
 
 
 anysign_patterns = [
-    url(r'^signer/(?P<pk>\d+)/$', signer_view, name='signer'),
-    url(r'^signer/(?P<pk>\d+)/return/$',
+    path('signer/<int:pk>/', signer_view, name='signer'),
+    path('signer/<int:pk>/return/',
         signer_return_view,
         name='signer_return'),
-    url(r'^signer/(?P<pk>\d+)/canceled/$',
+    path('signer/<int:pk>/canceled/',
         signer_canceled_view,
         name='signer_canceled'),
-    url(r'^signer/(?P<pk>\d+)/error/$',
+    path('signer/<int:pk>/error/',
         signer_error_view,
         name='signer_error'),
-    url(r'^signer/(?P<pk>\d+)/declined/$',
+    path('signer/<int:pk>/declined/',
         signer_declined_view,
         name='signer_declined'),
-    url(r'^signer/(?P<pk>\d+)/signed/$',
+    path('signer/<int:pk>/signed/',
         signer_signed_view,
         name='signer_signed'),
 ]
@@ -45,13 +45,13 @@ if StrictVersion(django.get_version()) >= StrictVersion('1.10'):
 
 
 urlpatterns = [
-    url(r'^$', home_view, name='home'),
-    url(r'^settings/$', settings_view, name='settings'),
-    url(r'^signature/add/$', create_signature_view, name='create_signature'),
-    url(r'^signature/add/template/$', create_signature_template_view,
+    path('', home_view, name='home'),
+    path('settings/', settings_view, name='settings'),
+    path('signature/add/', create_signature_view, name='create_signature'),
+    path('signature/add/template/', create_signature_template_view,
         name='create_signature_template'),
 
-    url(r'', include(anysign_patterns, namespace='anysign')),
+    path('', include(anysign_patterns, namespace='anysign')),
 ]
 
 
