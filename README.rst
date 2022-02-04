@@ -39,8 +39,8 @@ Resources
 .. _`django-anysign`: https://pypi.org/project/django-anysign/
 
 
-.. |Build Status| image:: https://travis-ci.org/peopledoc/django-docusign.svg?branch=master
-    :target: https://travis-ci.org/peopledoc/django-docusign
+.. |Build Status| image:: https://github.com/peopledoc/django-docusign/actions/workflows/ci.yml/badge.svg?branch=master
+    :target: https://github.com/peopledoc/django-docusign/actions
 
 .. |Documentation Status| image:: https://readthedocs.org/projects/django-docusign/badge/
     :target: http://django-docusign.readthedocs.io/en/latest/

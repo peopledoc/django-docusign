@@ -1,0 +1,31 @@
+name: Django DocuSign
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - python-version: 3.8
+            tox-options: "-e flake8 -e py38-django22 -e py38-django32 -e sphinx -e readme"
+          - python-version: 3.7
+            tox-options: "-e py37-django22 -e py37-django32"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install tox and any other packages
+        run: pip install tox
+      - name: Run tox
+        env:
+          DOCUSIGN_ROOT_URL: ${{ secrets.DOCUSIGN_ROOT_URL }}
+          DOCUSIGN_USERNAME: ${{ secrets.DOCUSIGN_USERNAME }}
+          DOCUSIGN_PASSWORD: ${{ secrets.DOCUSIGN_PASSWORD }}
+          DOCUSIGN_INTEGRATOR_KEY: ${{ secrets.DOCUSIGN_INTEGRATOR_KEY }}
+          DOCUSIGN_TEST_TEMPLATE_ID: ${{ secrets.DOCUSIGN_TEST_TEMPLATE_ID }}
+        # Run tox using the version of Python in `PATH`
+        run: tox ${{ matrix.tox-options }}
