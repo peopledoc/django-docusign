@@ -35,7 +35,7 @@ Use topic branches
   documentation, name your branch like ``23-contribute-doc``.
 
 * If you work in a development branch and want to refresh it with changes from
-  master, please `rebase`_ or `merge-based rebase`_, i.e. do not merge master.
+  master, please `rebase`_, i.e. do not merge master.
 
 
 ***********
@@ -97,7 +97,6 @@ get the setup. Here is an example to run the tests:
 
 .. _`django-docusign bugtracker`: https://github.com/peopledoc/django-docusign/issues
 .. _`rebase`: http://git-scm.com/book/en/Git-Branching-Rebasing
-.. _`merge-based rebase`: http://tech.novapost.fr/psycho-rebasing.html
 .. _`pip`: https://pypi.org/project/pip/
 .. _`tox`: https://pypi.org/project/tox/
 .. _`Sphinx`: https://pypi.org/project/Sphinx/
